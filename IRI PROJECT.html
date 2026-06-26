@@ -20,7 +20,20 @@
         body.contact-open .news-ticker,
         body.contact-open .hero,
         body.contact-open .container,
+        body.contact-open .tenders-section,
         body.contact-open .contact-section {
+            display: none;
+        }
+
+        body:not(.tenders-open) .tenders-section {
+            display: none;
+        }
+
+        body.tenders-open .news-ticker,
+        body.tenders-open .hero,
+        body.tenders-open .container,
+        body.tenders-open .contact-section,
+        body.tenders-open .contact-page {
             display: none;
         }
 
@@ -73,6 +86,7 @@
             margin-right: 20px;
             border: 2px solid #004b87;
             background-color: #ffffff;
+            cursor: pointer;
         }
 
         .institute-title h1 {
@@ -148,7 +162,7 @@
             padding-left: 0; /* Remove default padding for ul */
         }
 
-        nav ul li.dropdown:hover .dropdown-content {
+        nav ul li.dropdown:hover > .dropdown-content {
             display: block;
         }
 
@@ -159,6 +173,20 @@
 
         nav ul li.dropdown .dropdown-content li a:hover {
             background-color: #00335e;
+        }
+
+        nav ul li.dropdown .dropdown-content li.dropdown-submenu {
+            position: relative;
+        }
+
+        nav ul li.dropdown .dropdown-content li.dropdown-submenu > .dropdown-content {
+            top: 0;
+            left: 100%;
+            display: none;
+        }
+
+        nav ul li.dropdown .dropdown-content li.dropdown-submenu:hover > .dropdown-content {
+            display: block;
         }
 
 
@@ -284,6 +312,83 @@
         .sidebar ul li a:hover {
             text-decoration: underline;
             color: #b30000;
+        }
+
+        .tenders-section {
+            background: #ffffff;
+            padding: 40px 44px 70px;
+        }
+
+        .tenders-inner {
+            max-width: 1540px;
+            margin: 0 auto;
+        }
+
+        .tenders-inner h2 {
+            color: #557089;
+            text-align: center;
+            font-size: 38px;
+            margin-bottom: 34px;
+        }
+
+        .tender-summary {
+            color: #0065bd;
+            text-align: center;
+            font-size: 20px;
+            margin-bottom: 48px;
+        }
+
+        .tender-summary a {
+            color: #0065bd;
+            text-decoration: none;
+        }
+
+        .tender-summary a:hover {
+            text-decoration: underline;
+        }
+
+        .tender-table-wrap {
+            overflow-x: auto;
+            border: 1px solid #d9d9d9;
+            background: #ffffff;
+        }
+
+        .tender-table {
+            width: 100%;
+            min-width: 980px;
+            border-collapse: collapse;
+            color: #000000;
+            font-size: 20px;
+        }
+
+        .tender-table th,
+        .tender-table td {
+            border-right: 1px solid #d9d9d9;
+            border-bottom: 1px solid #d9d9d9;
+            padding: 16px 14px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .tender-table th {
+            background: #ffffff;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .tender-table th:last-child,
+        .tender-table td:last-child {
+            border-right: 0;
+        }
+
+        .tender-open-link {
+            color: #0065bd;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .tender-open-link:hover {
+            text-decoration: underline;
         }
 
         /* Contact Section */
@@ -549,6 +654,45 @@
             font-weight: 700;
         }
 
+        /* Modal (Lightbox) Styles */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1000; /* Sit on top */
+            padding-top: 60px;
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
+            text-align: center;
+        }
+
+        .modal-content {
+            margin: auto;
+            display: inline-block;
+            max-width: 90%;
+            max-height: 80vh;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .close-modal:hover,
+        .close-modal:focus {
+            color: #bbb;
+            text-decoration: none;
+        }
+
         @media (max-width: 900px) {
             .contact-page-header-inner {
                 flex-direction: column;
@@ -600,8 +744,49 @@
                     <li><a href="#">Testimonials</a></li>
                 </ul>
             </li>
-            <li><a href="#">Divisions</a></li>
-            <li><a href="#">Tenders & Policies</a></li>
+            <li class="dropdown">
+                <a href="#">Model Study</a>
+                <ul class="dropdown-content">
+                    <li><a href="#">Hydraulics Research Station (Bahadrabad)</a></li>
+                    <li><a href="#">An Introduction to Hydraulic Model Studies</a></li>
+                    <li><a href="#">Data Required for Different Studies</a></li>
+                    <li><a href="#">Hydraulics Laboratory</a></li>
+                    <li><a href="#">Experimental Shed</a></li>
+                    <li><a href="#">Model Trays</a></li>
+                    <li><a href="#">Meteorological Observatory</a></li>
+                    <li><a href="#">Current Meter Rating</a></li>
+                </ul>
+            </li>
+            <li class="dropdown">
+                <a href="#">Services</a>
+                <ul class="dropdown-content">
+                    <li><a href="#">Consultancy Areas</a></li>
+                    <li><a href="#">Concrete Cell</a></li>
+                    <li><a href="#">Test Facilities</a></li>
+                    <li><a href="#">Ground Water</a></li>
+                    <li><a href="#">Flood Related Studies</a></li>
+                    <li><a href="#">Important Studies</a></li>
+                </ul>
+            </li>
+            <li class="dropdown">
+                <a href="#">NHP</a>
+                <ul class="dropdown-content">
+                    <li><a href="#">About NHP Uttarakhand</a></li>
+                    <li><a href="#">Project Implementation</a></li>
+                    <li class="dropdown-submenu">
+                        <a href="#">Project Components</a>
+                        <ul class="dropdown-content">
+                            <li><a href="#">A-WRMS</a></li>
+                            <li><a href="#">B-WRIS</a></li>
+                            <li><a href="#">C-WROPS</a></li>
+                            <li><a href="#">D-ICE</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#">Project Management Unit</a></li>
+                    <li><a href="#">Training</a></li>
+                </ul>
+            </li>
+            <li><a href="#tenders" id="tendersLink">Tenders & Policies</a></li>
             <li class="dropdown">
                 <a href="#">Publications</a>
                 <ul class="dropdown-content">
@@ -673,6 +858,37 @@
         </div>
     </div>
 
+    <section class="tenders-section" id="tenders">
+        <div class="tenders-inner">
+            <h2>Tenders</h2>
+            <div class="tender-summary">
+                <a href="#">Active Bids (<span id="home-active-bids-count">0</span>)</a> |
+                <a href="#">Opening Today (<span id="home-opening-today-count">0</span>)</a> |
+                <a href="#">Closing Today (<span id="home-closing-today-count">0</span>)</a> |
+                <a href="#">Closing in next 7 days (<span id="home-closing-week-count">0</span>)</a> |
+                <a href="#">Archive (<span id="home-archive-count">0</span>)</a>
+            </div>
+            <div class="tender-table-wrap">
+                <table class="tender-table">
+                    <thead>
+                        <tr>
+                            <th>Publish Date</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Tender Ref No</th>
+                            <th>Description</th>
+                            <th>Office Detail</th>
+                            <th>Open</th>
+                        </tr>
+                    </thead>
+                    <tbody id="homeTendersList">
+                        <tr><td colspan="7">No Tenders Found</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
     <!-- Contact Section -->
     <section class="contact-section" id="contact">
         <h2>Contact Us</h2>
@@ -740,6 +956,12 @@
         </div>
     </main>
 
+    <!-- The Modal -->
+    <div id="logoModal" class="modal">
+        <span class="close-modal" id="closeModal">&times;</span>
+        <img class="modal-content" id="modalImage">
+    </div>
+
     <!-- Footer -->
     <footer>
         <div class="footer-content">
@@ -784,19 +1006,29 @@
         const employeeCorner = document.getElementById('employeeCorner');
         const homeLink = document.getElementById('homeLink');
         const contactUsLink = document.getElementById('contactUsLink');
+        const tendersLink = document.getElementById('tendersLink');
         const breadcrumbHome = document.getElementById('breadcrumbHome');
 
         function showContactPage() {
             document.body.classList.add('contact-open');
+            document.body.classList.remove('tenders-open');
             window.location.hash = 'contact-us';
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function showHomePage() {
             document.body.classList.remove('contact-open');
-            if (window.location.hash === '#contact-us') {
+            document.body.classList.remove('tenders-open');
+            if (window.location.hash === '#contact-us' || window.location.hash === '#tenders') {
                 history.pushState('', document.title, window.location.pathname + window.location.search);
             }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function showTendersPage() {
+            document.body.classList.remove('contact-open');
+            document.body.classList.add('tenders-open');
+            window.location.hash = 'tenders';
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -815,6 +1047,11 @@
             showHomePage();
         });
 
+        tendersLink.addEventListener('click', function (event) {
+            event.preventDefault();
+            showTendersPage();
+        });
+
         breadcrumbHome.addEventListener('click', function (event) {
             event.preventDefault();
             showHomePage();
@@ -822,7 +1059,156 @@
 
         if (window.location.hash === '#contact-us') {
             document.body.classList.add('contact-open');
+        } else if (window.location.hash === '#tenders') {
+            document.body.classList.add('tenders-open');
         }
+
+        // Logo Modal Logic
+        const logoModal = document.getElementById('logoModal');
+        const siteLogo = document.querySelector('.site-logo');
+        const modalImage = document.getElementById('modalImage');
+        const closeModal = document.getElementById('closeModal');
+
+        siteLogo.addEventListener('click', function() {
+            logoModal.style.display = 'block';
+            modalImage.src = this.src;
+        });
+
+        closeModal.addEventListener('click', function() {
+            logoModal.style.display = 'none';
+        });
+
+        // Close the modal if the user clicks outside of the image
+        window.addEventListener('click', function(event) {
+            if (event.target == logoModal) {
+                logoModal.style.display = 'none';
+            }
+        });
+    </script>
+
+    <script>
+        function escapeHtml(unsafe) {
+            return String(unsafe || '')
+                 .replace(/&/g, "&amp;")
+                 .replace(/</g, "&lt;")
+                 .replace(/>/g, "&gt;")
+                 .replace(/"/g, "&quot;")
+                 .replace(/'/g, "&#039;");
+        }
+
+        function formatDate(value) {
+            if (!value) return '';
+            const date = String(value).includes('T') ? new Date(value) : new Date(`${value}T00:00:00`);
+            if (Number.isNaN(date.getTime())) return value;
+            return date.toLocaleDateString('en-IN', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+        }
+
+        function toDateOnly(value) {
+            if (!value) return null;
+            const date = String(value).includes('T') ? new Date(value) : new Date(`${value}T00:00:00`);
+            if (Number.isNaN(date.getTime())) return null;
+            date.setHours(0, 0, 0, 0);
+            return date;
+        }
+
+        function updateTenderCounts(tenders) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const nextWeek = new Date(today);
+            nextWeek.setDate(today.getDate() + 7);
+
+            let active = 0;
+            let openingToday = 0;
+            let closingToday = 0;
+            let closingWeek = 0;
+            let archive = 0;
+
+            tenders.forEach((tender) => {
+                const startDate = toDateOnly(tender.startDate);
+                const endDate = toDateOnly(tender.endDate);
+                if (startDate && startDate.getTime() === today.getTime()) openingToday += 1;
+                if (endDate && endDate.getTime() === today.getTime()) closingToday += 1;
+                if (endDate && endDate >= today && endDate <= nextWeek) closingWeek += 1;
+                if (endDate && endDate < today) archive += 1;
+                if ((!startDate || startDate <= today) && (!endDate || endDate >= today)) active += 1;
+            });
+
+            document.getElementById('home-active-bids-count').textContent = active;
+            document.getElementById('home-opening-today-count').textContent = openingToday;
+            document.getElementById('home-closing-today-count').textContent = closingToday;
+            document.getElementById('home-closing-week-count').textContent = closingWeek;
+            document.getElementById('home-archive-count').textContent = archive;
+        }
+
+        function renderTenders(tenders) {
+            const tendersList = document.getElementById('homeTendersList');
+            if (!tendersList) return;
+
+            if (!Array.isArray(tenders) || tenders.length === 0) {
+                tendersList.innerHTML = '<tr><td colspan="7">No Tenders Found</td></tr>';
+                updateTenderCounts([]);
+                return;
+            }
+
+            tendersList.innerHTML = tenders.map((tender) => {
+                const openCell = tender.openLink
+                    ? `<a class="tender-open-link" href="${escapeHtml(tender.openLink)}" target="_blank" rel="noopener">Open</a>`
+                    : '-';
+
+                return `
+                    <tr>
+                        <td>${escapeHtml(formatDate(tender.publishDate || tender.date))}</td>
+                        <td>${escapeHtml(formatDate(tender.startDate))}</td>
+                        <td>${escapeHtml(formatDate(tender.endDate))}</td>
+                        <td>${escapeHtml(tender.refNo || tender.title || '')}</td>
+                        <td>${escapeHtml(tender.description)}</td>
+                        <td>${escapeHtml(tender.officeDetail || '')}</td>
+                        <td>${openCell}</td>
+                    </tr>`;
+            }).join('');
+            updateTenderCounts(tenders);
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const response = await fetch('/api/public-data');
+                if (!response.ok) {
+                    throw new Error('Could not fetch public data');
+                }
+                const data = await response.json();
+
+                // Update Marquee
+                const marquee = document.querySelector('.news-ticker marquee');
+                if (marquee && data.updates) {
+                    marquee.textContent = data.updates;
+                }
+
+                // Update Announcements
+                const announcementsList = document.querySelector('.sidebar ul');
+                if (announcementsList && Array.isArray(data.announcements)) {
+                    if (data.announcements.length > 0) {
+                        const newGif = '<img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/New_icon.gif" alt="New" width="25">';
+                        // Show top 5
+                        const recentAnnouncements = data.announcements.slice(0, 5);
+                        announcementsList.innerHTML = recentAnnouncements.map((announcement, index) => {
+                            const title = escapeHtml(announcement.title);
+                            const newIndicator = index === 0 ? ` ${newGif}` : '';
+                            return `<li><a href="#">${title}</a>${newIndicator}</li>`;
+                        }).join('');
+                    } else {
+                        announcementsList.innerHTML = '<li>No recent announcements.</li>';
+                    }
+                }
+
+                renderTenders(data.tenders);
+            } catch (error) {
+                console.error('Error loading dynamic content:', error);
+            }
+        });
     </script>
 
 </body>

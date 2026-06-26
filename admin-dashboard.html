@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - IRI</title>
+    <style>
+        :root {
+            --blue: #075a9a;
+            --blue-dark: #043a63;
+            --green: #237a57;
+            --red: #b83232;
+            --ink: #172033;
+            --muted: #667085;
+            --line: #d9e2ec;
+            --surface: #ffffff;
+            --page: #f5f7fb;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: var(--page);
+            color: var(--ink);
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .app-shell {
+            display: grid;
+            grid-template-columns: 280px minmax(0, 1fr);
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            background: var(--blue-dark);
+            color: #ffffff;
+            padding: 24px 18px;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 8px 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+            margin-bottom: 18px;
+        }
+
+        .brand img {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #ffffff;
+        }
+
+        .brand strong {
+            display: block;
+            font-size: 16px;
+            line-height: 1.2;
+        }
+
+        .brand span {
+            display: block;
+            margin-top: 3px;
+            color: rgba(255, 255, 255, 0.72);
+            font-size: 12px;
+        }
+
+        .nav {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            gap: 8px;
+        }
+
+        .nav button,
+        .logout {
+            width: 100%;
+            border: 0;
+            color: inherit;
+            font: inherit;
+            text-align: left;
+            cursor: pointer;
+            border-radius: 6px;
+            padding: 12px 14px;
+            background: transparent;
+            text-decoration: none;
+            display: block;
+        }
+
+        .nav button:hover,
+        .nav button.active {
+            background: rgba(255, 255, 255, 0.14);
+        }
+
+        .logout {
+            margin-top: auto;
+            background: var(--red);
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .logout:hover {
+            background: #922727;
+        }
+
+        .main {
+            min-width: 0;
+            padding: 28px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .topbar h1 {
+            margin: 0;
+            font-size: 28px;
+            color: var(--blue-dark);
+        }
+
+        .topbar p {
+            margin: 6px 0 0;
+            color: var(--muted);
+        }
+
+        .status-pill {
+            flex: 0 0 auto;
+            color: var(--green);
+            background: #eaf7f0;
+            border: 1px solid #b9e2cb;
+            border-radius: 999px;
+            padding: 8px 12px;
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .grid {
+            display: grid;
+            gap: 18px;
+        }
+
+        .stats {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+
+        .two-column {
+            grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+            align-items: start;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 10px 28px rgba(16, 24, 40, 0.06);
+        }
+
+        .card h2,
+        .card h3 {
+            margin: 0 0 14px;
+            color: var(--blue-dark);
+        }
+
+        .card p {
+            color: var(--muted);
+            line-height: 1.55;
+            margin: 0 0 14px;
+        }
+
+        .stat {
+            border-left: 4px solid var(--blue);
+        }
+
+        .stat .label {
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .stat .value {
+            margin-top: 10px;
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--ink);
+        }
+
+        .form-grid {
+            display: grid;
+            gap: 14px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 7px;
+            color: #27364a;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            border: 1px solid #c8d4df;
+            border-radius: 6px;
+            padding: 10px;
+            color: var(--ink);
+            font: inherit;
+            background: #ffffff;
+            outline: none;
+        }
+
+        textarea {
+            min-height: 130px;
+            resize: vertical;
+        }
+
+        input:focus,
+        textarea:focus {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(7, 90, 154, 0.12);
+        }
+
+        .primary-button {
+            width: fit-content;
+            min-width: 150px;
+            border: none;
+            border-radius: 6px;
+            background: var(--blue);
+            color: #ffffff;
+            padding: 12px 18px;
+            font: inherit;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .primary-button:hover {
+            background: var(--blue-dark);
+        }
+
+        .delete-button {
+            background: transparent;
+            border: 0;
+            color: var(--red);
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 4px;
+            margin-left: 8px;
+        }
+
+        .list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .list-item {
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            padding: 20px;
+            background: #fbfdff;
+        }
+
+        .list-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .list-item strong {
+            display: block;
+            color: var(--blue-dark);
+            margin-bottom: 6px;
+        }
+
+        .list-item p {
+            font-size: 14px;
+            margin: 0;
+            color: var(--muted);
+        }
+
+        .message {
+            min-height: 24px;
+            margin-top: 14px;
+            font-weight: 700;
+        }
+
+        .tender-panel {
+            margin-top: 18px;
+        }
+
+        .tender-heading {
+            text-align: center;
+            color: #557089;
+            font-size: 36px;
+            margin: 0 0 20px;
+        }
+
+        .tender-links {
+            text-align: center;
+            color: #0065bd;
+            margin-bottom: 36px;
+            font-size: 16px;
+        }
+
+        .tender-links a {
+            color: #0065bd;
+            text-decoration: none;
+        }
+
+        .tender-links a:hover {
+            text-decoration: underline;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            border: 1px solid #d9d9d9;
+            background: #ffffff;
+        }
+
+        .tender-table {
+            width: 100%;
+            min-width: 980px;
+            border-collapse: collapse;
+            color: #000000;
+            font-size: 16px;
+        }
+
+        .tender-table th,
+        .tender-table td {
+            border-right: 1px solid #d9d9d9;
+            border-bottom: 1px solid #d9d9d9;
+            padding: 11px 10px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .tender-table th {
+            font-weight: 700;
+            background: #ffffff;
+            white-space: nowrap;
+        }
+
+        .tender-table td:last-child,
+        .tender-table th:last-child {
+            border-right: 0;
+        }
+
+        .tender-actions {
+            white-space: nowrap;
+        }
+
+        .open-link {
+            color: #0065bd;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .open-link:hover {
+            text-decoration: underline;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        @media (max-width: 980px) {
+            .app-shell {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: static;
+                height: auto;
+            }
+
+            .nav {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .logout {
+                margin-top: 16px;
+            }
+
+            .stats,
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 560px) {
+            .main {
+                padding: 18px;
+            }
+
+            .topbar {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .nav {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="brand">
+                <img src="irilogo.jpg" alt="Irrigation Research Institute logo">
+                <div>
+                    <strong>IRI Admin</strong>
+                    <span>Management Dashboard</span>
+                </div>
+            </div>
+
+            <nav aria-label="Admin navigation">
+                <ul class="nav">
+                    <li><button type="button" data-page="dashboard">Dashboard</button></li>
+                    <li><button type="button" data-page="latest-updates">Latest Updates</button></li>
+                    <li><button type="button" data-page="announcements">Announcements</button></li>
+                    <li><button type="button" data-page="tenders">Tenders</button></li>
+                    <li><button type="button" data-page="settings">Settings</button></li>
+                </ul>
+            </nav>
+
+            <a class="logout" href="/logout">Logout</a>
+        </aside>
+
+        <main class="main">
+            <header class="topbar">
+                <div>
+                    <h1 id="page-title"></h1>
+                    <p id="page-subtitle"></p>
+                </div>
+                <div class="status-pill">Logged in as Admin</div>
+            </header>
+
+            <section id="dashboard" class="page">
+                <div class="grid stats">
+                    <article class="card stat">
+                        <div class="label">Total Visits</div>
+                        <div class="value">N/A</div>
+                    </article>
+                    <article class="card stat">
+                        <div class="label">Unique Visitors</div>
+                        <div class="value">N/A</div>
+                    </article>
+                    <article class="card stat">
+                        <div class="label">Announcements</div>
+                        <div id="announcements-count" class="value">0</div>
+                    </article>
+                    <article class="card stat">
+                        <div class="label">Active Tenders</div>
+                        <div id="tenders-count" class="value">0</div>
+                    </article>
+                </div>
+            </section>
+
+            <section id="latest-updates" class="page">
+                <div class="card">
+                    <h2>Manage Latest Updates</h2>
+                    <form id="updates-form" class="form-grid">
+                        <div>
+                            <label for="update-content">Update Content for Homepage Marquee</label>
+                            <textarea id="update-content" name="content" placeholder="Enter the latest update text here."></textarea>
+                        </div>
+                        <button class="primary-button" type="submit">Save Updates</button>
+                        <div class="message" id="updates-message"></div>
+                    </form>
+                </div>
+            </section>
+
+            <section id="announcements" class="page">
+                <div class="grid two-column">
+                    <section class="card">
+                        <h2>Add Announcement</h2>
+                        <form id="announcements-form" class="form-grid">
+                            <div>
+                                <label for="announcement-title">Title</label>
+                                <input type="text" id="announcement-title" name="title" required>
+                            </div>
+                            <div>
+                                <label for="announcement-content">Content</label>
+                                <textarea id="announcement-content" name="content" required></textarea>
+                            </div>
+                            <button class="primary-button" type="submit">Add Announcement</button>
+                        </form>
+                    </section>
+                    <section class="card">
+                        <h2>Current Announcements</h2>
+                        <div id="announcements-list" class="list"></div>
+                    </section>
+                </div>
+            </section>
+
+            <section id="tenders" class="page">
+                <section class="card">
+                    <h2>Add Tender</h2>
+                    <form id="tenders-form" class="form-grid">
+                        <div class="form-row">
+                            <div>
+                                <label for="tender-publish-date">Publish Date</label>
+                                <input type="date" id="tender-publish-date" name="publishDate" required>
+                            </div>
+                            <div>
+                                <label for="tender-start-date">Start Date</label>
+                                <input type="date" id="tender-start-date" name="startDate" required>
+                            </div>
+                            <div>
+                                <label for="tender-end-date">End Date</label>
+                                <input type="date" id="tender-end-date" name="endDate" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div>
+                                <label for="tender-ref-no">Tender Ref No</label>
+                                <input type="text" id="tender-ref-no" name="refNo" required>
+                            </div>
+                            <div>
+                                <label for="tender-office-detail">Office Detail</label>
+                                <input type="text" id="tender-office-detail" name="officeDetail" required>
+                            </div>
+                            <div>
+                                <label for="tender-open-link">Open Link</label>
+                                <input type="url" id="tender-open-link" name="openLink" placeholder="https://example.com/tender.pdf">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="tender-description">Description</label>
+                            <textarea id="tender-description" name="description" required></textarea>
+                        </div>
+                        <button class="primary-button" type="submit">Add Tender</button>
+                    </form>
+                </section>
+
+                <section class="card tender-panel">
+                    <h2 class="tender-heading">Tenders</h2>
+                    <div class="tender-links">
+                        <a href="#">Active Bids (<span id="active-bids-count">0</span>)</a> |
+                        <a href="#">Opening Today (<span id="opening-today-count">0</span>)</a> |
+                        <a href="#">Closing Today (<span id="closing-today-count">0</span>)</a> |
+                        <a href="#">Closing in next 7 days (<span id="closing-week-count">0</span>)</a> |
+                        <a href="#">Archive (<span id="archive-count">0</span>)</a>
+                    </div>
+                    <div class="table-wrap">
+                        <table class="tender-table">
+                            <thead>
+                                <tr>
+                                    <th>Publish Date</th>
+                                    <th>Start Date</th>
+                                    <th>End Date</th>
+                                    <th>Tender Ref No</th>
+                                    <th>Description</th>
+                                    <th>Office Detail</th>
+                                    <th>Open</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tenders-list"></tbody>
+                        </table>
+                    </div>
+                </section>
+            </section>
+
+            <section id="settings" class="page">
+                <div class="card" style="max-width: 600px;">
+                    <h2>Change Password</h2>
+                    <form id="password-form" class="form-grid">
+                        <div>
+                            <label for="current-password">Current Password</label>
+                            <input type="password" id="current-password" name="currentPassword" autocomplete="current-password" required>
+                        </div>
+                        <div>
+                            <label for="new-password">New Password</label>
+                            <input type="password" id="new-password" name="newPassword" autocomplete="new-password" required>
+                        </div>
+                        <div>
+                            <label for="confirm-password">Confirm New Password</label>
+                            <input type="password" id="confirm-password" name="confirmPassword" autocomplete="new-password" required>
+                        </div>
+                        <button class="primary-button" type="submit">Change Password</button>
+                    </form>
+                    <div id="password-message" class="message" role="status"></div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const state = {
+                updates: '',
+                announcements: [],
+                tenders: []
+            };
+
+            const pageInfo = {
+                dashboard: { title: 'Dashboard', subtitle: 'Review website activity and manage public content.' },
+                'latest-updates': { title: 'Latest Updates', subtitle: 'Edit the update text shown on the public website.' },
+                announcements: { title: 'Announcements', subtitle: 'Create and review public announcements.' },
+                tenders: { title: 'Tenders', subtitle: 'Publish and review tender information.' },
+                settings: { title: 'Settings', subtitle: 'Manage admin account access.' }
+            };
+
+            const showPage = (pageId) => {
+                document.querySelectorAll('.page').forEach(p => p.classList.toggle('active', p.id === pageId));
+                document.querySelectorAll('.nav button').forEach(b => b.classList.toggle('active', b.dataset.page === pageId));
+                document.getElementById('page-title').textContent = pageInfo[pageId].title;
+                document.getElementById('page-subtitle').textContent = pageInfo[pageId].subtitle;
+            };
+
+            const escapeHtml = (value = '') => String(value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+
+            const formatDate = (value) => {
+                if (!value) return '';
+                const date = String(value).includes('T') ? new Date(value) : new Date(`${value}T00:00:00`);
+                if (Number.isNaN(date.getTime())) return value;
+                return date.toLocaleDateString('en-IN', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric'
+                });
+            };
+
+            const toDateOnly = (value) => {
+                if (!value) return null;
+                const date = String(value).includes('T') ? new Date(value) : new Date(`${value}T00:00:00`);
+                if (Number.isNaN(date.getTime())) return null;
+                date.setHours(0, 0, 0, 0);
+                return date;
+            };
+
+            const renderAnnouncements = () => {
+                const list = document.getElementById('announcements-list');
+                if (state.announcements.length === 0) {
+                    list.innerHTML = '<div class="list-item"><p>No announcements yet.</p></div>';
+                    return;
+                }
+                list.innerHTML = state.announcements.map(a => `
+                    <div class="list-item">
+                        <div class="list-item-header">
+                            <div>
+                                <strong>${escapeHtml(a.title)}</strong>
+                                <p>${escapeHtml(a.content)}</p>
+                            </div>
+                            <button class="delete-button" data-id="${a.id}" data-type="announcements">DELETE</button>
+                        </div>
+                    </div>`).join('');
+            };
+
+            const updateTenderCounts = () => {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const nextWeek = new Date(today);
+                nextWeek.setDate(today.getDate() + 7);
+
+                let active = 0;
+                let openingToday = 0;
+                let closingToday = 0;
+                let closingWeek = 0;
+                let archive = 0;
+
+                state.tenders.forEach(t => {
+                    const startDate = toDateOnly(t.startDate);
+                    const endDate = toDateOnly(t.endDate);
+                    if (startDate && startDate.getTime() === today.getTime()) openingToday += 1;
+                    if (endDate && endDate.getTime() === today.getTime()) closingToday += 1;
+                    if (endDate && endDate >= today && endDate <= nextWeek) closingWeek += 1;
+                    if (endDate && endDate < today) archive += 1;
+                    if ((!startDate || startDate <= today) && (!endDate || endDate >= today)) active += 1;
+                });
+
+                document.getElementById('active-bids-count').textContent = active;
+                document.getElementById('opening-today-count').textContent = openingToday;
+                document.getElementById('closing-today-count').textContent = closingToday;
+                document.getElementById('closing-week-count').textContent = closingWeek;
+                document.getElementById('archive-count').textContent = archive;
+            };
+
+            const renderTenders = () => {
+                const list = document.getElementById('tenders-list');
+                if (state.tenders.length === 0) {
+                    list.innerHTML = '<tr><td colspan="8">No Tenders Found</td></tr>';
+                    updateTenderCounts();
+                    return;
+                }
+                list.innerHTML = state.tenders.map(t => `
+                    <tr>
+                        <td>${escapeHtml(formatDate(t.publishDate || t.date))}</td>
+                        <td>${escapeHtml(formatDate(t.startDate))}</td>
+                        <td>${escapeHtml(formatDate(t.endDate))}</td>
+                        <td>${escapeHtml(t.refNo || t.title || '')}</td>
+                        <td>${escapeHtml(t.description)}</td>
+                        <td>${escapeHtml(t.officeDetail || '')}</td>
+                        <td>${t.openLink ? `<a class="open-link" href="${escapeHtml(t.openLink)}" target="_blank" rel="noopener">Open</a>` : '-'}</td>
+                        <td class="tender-actions"><button class="delete-button" data-id="${t.id}" data-type="tenders">DELETE</button></td>
+                    </tr>`).join('');
+                updateTenderCounts();
+            };
+
+            const updateStats = () => {
+                document.getElementById('announcements-count').textContent = state.announcements.length;
+                document.getElementById('tenders-count').textContent = state.tenders.length;
+                document.getElementById('update-content').value = state.updates;
+            };
+
+            const fetchData = async () => {
+                try {
+                    const response = await fetch('/api/data');
+                    if (!response.ok) throw new Error('Failed to fetch data');
+                    const data = await response.json();
+                    Object.assign(state, data);
+                } catch (error) {
+                    console.error('Error fetching data:', error);
+                }
+            };
+
+            const handleDelete = async (e) => {
+                if (!e.target.matches('.delete-button')) return;
+                const { id, type } = e.target.dataset;
+                if (!confirm(`Are you sure you want to delete this ${type.slice(0, -1)}?`)) return;
+
+                const response = await fetch(`/api/${type}/${id}`, { method: 'DELETE' });
+                if (response.ok) {
+                    state[type] = state[type].filter(item => item.id != id);
+                    if (type === 'announcements') renderAnnouncements();
+                    if (type === 'tenders') renderTenders();
+                    updateStats();
+                } else {
+                    alert(`Failed to delete ${type.slice(0, -1)}.`);
+                }
+            };
+
+            const setupEventListeners = () => {
+                document.querySelectorAll('.nav button').forEach(b => b.addEventListener('click', () => showPage(b.dataset.page)));
+                document.getElementById('announcements-list').addEventListener('click', handleDelete);
+                document.getElementById('tenders-list').addEventListener('click', handleDelete);
+
+                document.getElementById('password-form').addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const form = e.target;
+                    const messageDiv = document.getElementById('password-message');
+                    const response = await fetch('/change-password', { method: 'POST', body: new URLSearchParams(new FormData(form)) });
+                    messageDiv.textContent = await response.text();
+                    messageDiv.style.color = response.ok ? 'var(--green)' : 'var(--red)';
+                    if (response.ok) form.reset();
+                });
+
+                document.getElementById('updates-form').addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const content = document.getElementById('update-content').value;
+                    const messageDiv = document.getElementById('updates-message');
+                    const response = await fetch('/api/updates', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ content })
+                    });
+                    const result = await response.json();
+                    messageDiv.textContent = result.message;
+                    messageDiv.style.color = response.ok ? 'var(--green)' : 'var(--red)';
+                });
+
+                document.getElementById('announcements-form').addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const form = e.target;
+                    const response = await fetch('/api/announcements', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(Object.fromEntries(new FormData(form)))
+                    });
+                    if (response.ok) {
+                        const newAnnouncement = await response.json();
+                        state.announcements.unshift(newAnnouncement);
+                        renderAnnouncements();
+                        updateStats();
+                        form.reset();
+                    }
+                });
+
+                document.getElementById('tenders-form').addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const form = e.target;
+                    const response = await fetch('/api/tenders', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(Object.fromEntries(new FormData(form)))
+                    });
+                    if (response.ok) {
+                        const newTender = await response.json();
+                        state.tenders.unshift(newTender);
+                        renderTenders();
+                        updateStats();
+                        form.reset();
+                    }
+                });
+            };
+
+            const init = async () => {
+                await fetchData();
+                updateStats();
+                renderAnnouncements();
+                renderTenders();
+                setupEventListeners();
+                showPage('dashboard');
+            };
+
+            init();
+        });
+    </script>
+</body>
+</html>
