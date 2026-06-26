@@ -17,6 +17,44 @@
             background-color: #f5f5f5;
         }
 
+        body.contact-open .news-ticker,
+        body.contact-open .hero,
+        body.contact-open .container,
+        body.contact-open .contact-section {
+            display: none;
+        }
+
+        .top-info-bar {
+            background: #050505;
+            color: #ffffff;
+            min-height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 24px;
+            padding: 6px 20px;
+            font-size: 14px;
+            font-weight: 700;
+            flex-wrap: wrap;
+        }
+
+        .top-info-bar a {
+            color: #ffffff;
+            text-decoration: none;
+        }
+
+        .top-info-bar a:hover {
+            text-decoration: underline;
+        }
+
+        .employee-corner {
+            border: 1px solid #ffffff;
+            border-radius: 3px;
+            padding: 1px 5px;
+            cursor: context-menu;
+            line-height: 1.2;
+        }
+
         /* Top Header Section */
         header {
             background-color: #ffffff;
@@ -103,7 +141,7 @@
             display: none;
             position: absolute;
             background-color: #004b87;
-            min-width: 220px;
+            min-width: 260px;
             box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
             z-index: 1;
             list-style: none;
@@ -248,18 +286,291 @@
             color: #b30000;
         }
 
+        /* Contact Section */
+        .contact-section {
+            background: #ffffff;
+            padding: 40px 40px 70px;
+            border-top: 4px solid #3b87c8;
+        }
+
+        .contact-section h2 {
+            color: #557089;
+            text-align: center;
+            font-size: 30px;
+            margin-bottom: 50px;
+        }
+
+        .contact-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            max-width: 1520px;
+            margin: 0 auto;
+        }
+
+        .contact-card {
+            min-height: 190px;
+            background: #ffffff;
+            box-shadow: 0 16px 28px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 25px;
+        }
+
+        .contact-icon {
+            width: 52px;
+            height: 52px;
+            border: 2px dotted #79b9ff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+        }
+
+        .contact-icon svg {
+            width: 28px;
+            height: 28px;
+            stroke: #3b8fd8;
+            stroke-width: 2.3;
+            fill: none;
+        }
+
+        .contact-card h3 {
+            color: #606060;
+            font-size: 22px;
+            margin-bottom: 12px;
+        }
+
+        .contact-card p {
+            color: #444;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .contact-page {
+            display: none;
+            background: #ffffff;
+            color: #000000;
+        }
+
+        body.contact-open .contact-page {
+            display: block;
+        }
+
+        .contact-page-header {
+            border-top: 3px solid #2f81bb;
+            background: #f3f8fc;
+            min-height: 72px;
+        }
+
+        .contact-page-header-inner {
+            max-width: 1520px;
+            margin: 0 auto;
+            padding: 28px 18px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 30px;
+        }
+
+        .contact-page-title {
+            font-size: 22px;
+            font-weight: 400;
+            color: #111111;
+        }
+
+        .breadcrumb {
+            list-style: none;
+            display: flex;
+            gap: 9px;
+            align-items: center;
+            font-size: 12px;
+            color: #000000;
+            padding-top: 4px;
+        }
+
+        .breadcrumb li::after {
+            content: "/";
+            margin-left: 9px;
+            color: #000000;
+        }
+
+        .breadcrumb li:last-child::after {
+            content: "";
+            margin-left: 0;
+        }
+
+        .breadcrumb a {
+            color: #005da8;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .contact-page-body {
+            max-width: 1520px;
+            margin: 0 auto;
+            min-height: 317px;
+            padding: 42px 18px 56px;
+            font-size: 12px;
+            line-height: 2.1;
+        }
+
+        .contact-details {
+            max-width: 540px;
+        }
+
+        .contact-details p {
+            margin-bottom: 4px;
+        }
+
+        .contact-details .spacer {
+            height: 24px;
+        }
+
         /* Footer */
         footer {
-            background-color: #222;
-            color: #ccc;
-            text-align: center;
-            padding: 20px;
-            margin-top: 30px;
+            background-color: #073b63;
+            color: #ffffff;
+            padding: 55px 40px 18px;
             font-size: 14px;
+            position: relative;
+            border-top: 5px solid #b30000;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: 1.3fr 1fr 1.2fr;
+            gap: 70px;
+            max-width: 1480px;
+            margin: 0 auto;
+        }
+
+        .footer-column h3 {
+            font-size: 24px;
+            margin-bottom: 22px;
+            color: #ffffff;
+        }
+
+        .footer-column h4 {
+            font-size: 16px;
+            margin-bottom: 20px;
+            color: #d7efff;
+        }
+
+        .footer-column p {
+            line-height: 1.7;
+            margin-bottom: 14px;
+        }
+
+        .footer-column ul {
+            list-style: none;
+        }
+
+        .footer-column li {
+            margin-bottom: 18px;
+        }
+
+        .footer-column a {
+            color: #f4fbff;
+            text-decoration: none;
+        }
+
+        .footer-column a:hover {
+            color: #ffd7d7;
+            text-decoration: underline;
+        }
+
+        .footer-column li::before {
+            content: "\203A";
+            color: #8ed3ff;
+            font-size: 22px;
+            margin-right: 9px;
+            vertical-align: -1px;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 10px;
+            margin: 12px 0 34px;
+        }
+
+        .social-links a {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(142,211,255,0.18);
+            border: 1px solid rgba(215,239,255,0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .social-links a:hover {
+            background: #b30000;
+            color: #ffffff;
+            text-decoration: none;
+        }
+
+        .webmail-badge {
+            display: inline-block;
+            background: #ffffff;
+            color: #333;
+            padding: 2px 6px;
+            font-size: 20px;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .webmail-badge span {
+            color: #8b3a38;
+        }
+
+        .back-to-top {
+            position: absolute;
+            right: 8px;
+            bottom: 0;
+            width: 39px;
+            height: 40px;
+            background: #b30000;
+            color: #ffffff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            font-weight: 700;
+        }
+
+        @media (max-width: 900px) {
+            .contact-page-header-inner {
+                flex-direction: column;
+            }
+
+            .contact-cards,
+            .footer-content {
+                grid-template-columns: 1fr;
+            }
+
         }
     </style>
 </head>
 <body>
+
+    <div class="top-info-bar">
+        <a href="mailto:ce@iriroorkee.res.in">Email: ce@iriroorkee.res.in</a>
+        <span>|</span>
+        <a href="mailto:info@iriroorkee.res.in">info@iriroorkee.res.in</a>
+        <a href="tel:+911332265174">Phone: +91-1332-265174</a>
+        <a href="admin-login.html" class="employee-corner" id="employeeCorner">Employee Corner</a>
+    </div>
 
     <!-- Header Section -->
     <header>
@@ -278,7 +589,7 @@
     <!-- Navigation Menu -->
     <nav>
         <ul>
-            <li><a href="#">Home</a></li>
+            <li><a href="#" id="homeLink">Home</a></li>
             <li class="dropdown">
                 <a href="#">About Us</a>
                 <ul class="dropdown-content">
@@ -291,9 +602,34 @@
             </li>
             <li><a href="#">Divisions</a></li>
             <li><a href="#">Tenders & Policies</a></li>
-            <li><a href="#">Gallery</a></li>
-            <li><a href="#">RTI</a></li>
-            <li><a href="#">Contact Us</a></li>
+            <li class="dropdown">
+                <a href="#">Publications</a>
+                <ul class="dropdown-content">
+                    <li><a href="#">Achievements</a></li>
+                    <li><a href="#">Annual Report</a></li>
+                    <li><a href="#">Award</a></li>
+                    <li><a href="#">Outstanding Contribution</a></li>
+                    <li><a href="#">Activity Profile</a></li>
+                    <li><a href="#">News Letter</a></li>
+                </ul>
+            </li>
+            <li class="dropdown">
+                <a href="#">Laboratories</a>
+                <ul class="dropdown-content">
+                    <li><a href="#">Capacity Survey Laboratory</a></li>
+                    <li><a href="#">Cement & Concrete Laboratory</a></li>
+                    <li><a href="#">Chemical Laboratory</a></li>
+                    <li><a href="#">Computer Center</a></li>
+                    <li><a href="#">EHDA Laboratory</a></li>
+                    <li><a href="#">Highway Lab</a></li>
+                    <li><a href="#">Isotope Laboratory</a></li>
+                    <li><a href="#">Remote Sensing Laboratory</a></li>
+                    <li><a href="#">Rock Mechanics Laboratory</a></li>
+                    <li><a href="#">Soil Laboratory</a></li>
+                    <li><a href="#">Water Quality Laboratory</a></li>
+                </ul>
+            </li>
+            <li><a href="#contact-us" id="contactUsLink">Contact Us</a></li>
         </ul>
     </nav>
 
@@ -337,11 +673,157 @@
         </div>
     </div>
 
+    <!-- Contact Section -->
+    <section class="contact-section" id="contact">
+        <h2>Contact Us</h2>
+        <div class="contact-cards">
+            <div class="contact-card">
+                <div class="contact-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12 21s7-6.1 7-12a7 7 0 0 0-14 0c0 5.9 7 12 7 12z"></path>
+                        <circle cx="12" cy="9" r="2.5"></circle>
+                    </svg>
+                </div>
+                <h3>Our Address</h3>
+                <p>Irrigation Research Institute, Roorkee, Uttarakhand</p>
+            </div>
+            <div class="contact-card">
+                <div class="contact-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24">
+                        <rect x="3" y="5" width="18" height="14" rx="2"></rect>
+                        <path d="m4 7 8 6 8-6"></path>
+                    </svg>
+                </div>
+                <h3>Email Us</h3>
+                <p>ce@iriroorkee.res.in<br>info@iriroorkee.res.in</p>
+            </div>
+            <div class="contact-card">
+                <div class="contact-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.4 19.4 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.8a2 2 0 0 1-.4 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"></path>
+                        <path d="M15 2a7 7 0 0 1 7 7"></path>
+                        <path d="M15 6a3 3 0 0 1 3 3"></path>
+                    </svg>
+                </div>
+                <h3>Call Us</h3>
+                <p>+91-1332-265174<br>+91-1332-265174</p>
+            </div>
+        </div>
+    </section>
+
+    <main class="contact-page" id="contact-us">
+        <div class="contact-page-header">
+            <div class="contact-page-header-inner">
+                <h1 class="contact-page-title">An ISO 9001: 2008 Certified Organization</h1>
+                <ul class="breadcrumb" aria-label="Breadcrumb">
+                    <li><a href="#" id="breadcrumbHome">Home</a></li>
+                    <li>About Us</li>
+                    <li>Contact Us</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="contact-page-body">
+            <div class="contact-details">
+                <p><strong>Chief Engineer (Design) &amp; Director</strong></p>
+                <p>Irrigation Research Institute, Roorkee</p>
+                <p>Phone no : +91 - 1332 - 265174</p>
+                <p>Email : ce@iriroorkee.res.in</p>
+                <p>Fax : +91 - 1332 - 262487</p>
+
+                <div class="spacer"></div>
+
+                <p>For any Information/Query related to Hydraulic Model Study/Testing etc.</p>
+                <p>Please mail us at -</p>
+                <p>info@iriroorkee.res.in</p>
+            </div>
+        </div>
+    </main>
+
     <!-- Footer -->
     <footer>
-        <p>&copy; 2026 Irrigation Research Institute, Roorkee. All Rights Reserved.</p>
-        <p>Designed and Developed by You.</p>
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>Irrigation Research Institute</h3>
+                <p>Irrigation Research Institute<br>Roorkee, Uttarakhand</p>
+                <p><strong>Phone:</strong> 91-1332-265174<br><strong>Email:</strong> info@iriroorkee.res.in</p>
+                <div class="social-links" aria-label="Social links">
+                    <a href="#" aria-label="Twitter">t</a>
+                    <a href="#" aria-label="Facebook">f</a>
+                    <a href="#" aria-label="Instagram">i</a>
+                    <a href="#" aria-label="Skype">s</a>
+                    <a href="#" aria-label="LinkedIn">in</a>
+                </div>
+                <div class="webmail-badge">web<span>Mail</span></div>
+            </div>
+            <div class="footer-column">
+                <h4>Useful Links</h4>
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">About us</a></li>
+                    <li><a href="#">Common Facilities</a></li>
+                    <li><a href="#">Outstanding Contribution</a></li>
+                    <li><a href="#">Cement & Concrete Laboratory</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h4>Our Services</h4>
+                <ul>
+                    <li><a href="#">Highway Laboratory</a></li>
+                    <li><a href="#">Consultancy Areas</a></li>
+                    <li><a href="#">Flood Related Studies</a></li>
+                    <li><a href="#">An Introduction to Hydraulic Model Studies</a></li>
+                    <li><a href="#">About NHP Uttarakhand</a></li>
+                </ul>
+            </div>
+        </div>
+        <a href="#" class="back-to-top" aria-label="Back to top">^</a>
     </footer>
+
+    <script>
+        const employeeCorner = document.getElementById('employeeCorner');
+        const homeLink = document.getElementById('homeLink');
+        const contactUsLink = document.getElementById('contactUsLink');
+        const breadcrumbHome = document.getElementById('breadcrumbHome');
+
+        function showContactPage() {
+            document.body.classList.add('contact-open');
+            window.location.hash = 'contact-us';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function showHomePage() {
+            document.body.classList.remove('contact-open');
+            if (window.location.hash === '#contact-us') {
+                history.pushState('', document.title, window.location.pathname + window.location.search);
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        employeeCorner.addEventListener('contextmenu', function (event) {
+            event.preventDefault();
+            window.location.href = 'admin-login.html';
+        });
+
+        contactUsLink.addEventListener('click', function (event) {
+            event.preventDefault();
+            showContactPage();
+        });
+
+        homeLink.addEventListener('click', function (event) {
+            event.preventDefault();
+            showHomePage();
+        });
+
+        breadcrumbHome.addEventListener('click', function (event) {
+            event.preventDefault();
+            showHomePage();
+        });
+
+        if (window.location.hash === '#contact-us') {
+            document.body.classList.add('contact-open');
+        }
+    </script>
 
 </body>
 </html>

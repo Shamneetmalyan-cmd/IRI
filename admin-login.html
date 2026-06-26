@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - Irrigation Research Institute</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #f4f7fb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .login-panel {
+            width: 100%;
+            max-width: 420px;
+            background: #ffffff;
+            border-top: 5px solid #004b87;
+            box-shadow: 0 18px 40px rgba(0,0,0,0.12);
+            padding: 34px;
+        }
+
+        .login-logo {
+            width: 84px;
+            height: 84px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #004b87;
+            display: block;
+            margin: 0 auto 18px;
+        }
+
+        h1 {
+            color: #004b87;
+            text-align: center;
+            font-size: 26px;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #555;
+            text-align: center;
+            margin-bottom: 28px;
+            font-size: 14px;
+        }
+
+        label {
+            display: block;
+            color: #333;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+            border: 1px solid #c8d4df;
+            padding: 12px;
+            font-size: 15px;
+            margin-bottom: 18px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #004b87;
+            box-shadow: 0 0 0 3px rgba(0,75,135,0.12);
+        }
+
+        button {
+            width: 100%;
+            border: 0;
+            background: #004b87;
+            color: #ffffff;
+            padding: 13px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #00335e;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #004b87;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <main class="login-panel">
+        <img class="login-logo" src="irilogo.jpg" alt="Irrigation Research Institute logo">
+        <h1>Admin Login</h1>
+        <p class="subtitle">Employee Corner access</p>
+        <form>
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" autocomplete="username" required>
+
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" autocomplete="current-password" required>
+
+            <button type="submit">Login</button>
+        </form>
+        <a class="back-link" href="IRI PROJECT.html">Back to Home</a>
+    </main>
+</body>
+</html>
