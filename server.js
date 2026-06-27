@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const session = require('express-session');
 const fs = require('fs');
+const open = require('open').default;
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -183,7 +184,10 @@ app.use(express.static(__dirname, {
     index: false
 }));
 
-app.listen(port, () => {
-    console.log(`Server is running at http://localhost:${port}`);
-    console.log(`Open http://localhost:${port}/IRI PROJECT.html in your browser.`);
+app.listen(port, async () => {
+    const url = `http://localhost:${port}`;
+
+    console.log(`Server is running at ${url}`);
+
+    await open(url);
 });
