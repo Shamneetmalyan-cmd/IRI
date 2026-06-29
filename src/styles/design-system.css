@@ -1,0 +1,257 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+@import "tailwindcss";
+
+@theme {
+    --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+
+    --color-primary-blue: #0F4C81;
+    --color-secondary-blue: #1D70B8;
+    --color-accent: #FFC107;
+    --color-page-bg: #F8FAFC;
+    --color-surface: #FFFFFF;
+    --color-border-soft: #E5E7EB;
+    --color-success: #16A34A;
+    --color-danger: #DC2626;
+
+    --font-size-page-title: 36px;
+    --line-height-page-title: 44px;
+    --font-size-section-heading: 28px;
+    --line-height-section-heading: 36px;
+    --font-size-card-title: 20px;
+    --line-height-card-title: 28px;
+    --font-size-body: 16px;
+    --line-height-body: 26px;
+    --font-size-small: 14px;
+    --line-height-small: 22px;
+
+    --shadow-soft: 0 16px 40px rgba(15, 76, 129, 0.08);
+
+    --animate-fade: fade 200ms ease-out;
+    --animate-slide-up: slide-up 200ms ease-out;
+}
+
+@keyframes fade {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slide-up {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@layer base {
+    html {
+        font-family: var(--font-sans);
+        background: var(--color-page-bg);
+    }
+
+    body {
+        margin: 0;
+        min-width: 320px;
+        background: var(--color-page-bg);
+        color: #172033;
+        font-size: var(--font-size-body);
+        line-height: var(--line-height-body);
+    }
+
+    a {
+        color: var(--color-secondary-blue);
+        text-underline-offset: 3px;
+        transition: color 200ms ease;
+    }
+
+    a:hover {
+        color: var(--color-primary-blue);
+        text-decoration: underline;
+    }
+
+    button,
+    a,
+    input,
+    textarea,
+    select {
+        outline-color: var(--color-accent);
+        outline-offset: 3px;
+    }
+}
+
+@layer components {
+    .ds-container {
+        width: 100%;
+        max-width: 1280px;
+        margin-inline: auto;
+        padding-inline: 16px;
+    }
+
+    @media (min-width: 768px) {
+        .ds-container {
+            padding-inline: 24px;
+        }
+    }
+
+    @media (min-width: 1024px) {
+        .ds-container {
+            padding-inline: 32px;
+        }
+    }
+
+    .ds-page-title {
+        color: var(--color-primary-blue);
+        font-size: var(--font-size-page-title);
+        font-weight: 800;
+        line-height: var(--line-height-page-title);
+    }
+
+    .ds-section-heading {
+        color: var(--color-primary-blue);
+        font-size: var(--font-size-section-heading);
+        font-weight: 700;
+        line-height: var(--line-height-section-heading);
+    }
+
+    .ds-card-title {
+        color: #172033;
+        font-size: var(--font-size-card-title);
+        font-weight: 700;
+        line-height: var(--line-height-card-title);
+    }
+
+    .ds-text {
+        color: #334155;
+        font-size: var(--font-size-body);
+        line-height: var(--line-height-body);
+    }
+
+    .ds-small-text {
+        color: #64748B;
+        font-size: var(--font-size-small);
+        line-height: var(--line-height-small);
+    }
+
+    .ds-card {
+        border: 1px solid var(--color-border-soft);
+        border-radius: 16px;
+        background: var(--color-surface);
+        padding: 24px;
+        box-shadow: var(--shadow-soft);
+    }
+
+    .ds-button {
+        display: inline-flex;
+        min-height: 44px;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border-radius: 10px;
+        border: 1px solid transparent;
+        padding: 10px 18px;
+        font-size: 16px;
+        font-weight: 500;
+        line-height: 24px;
+        text-decoration: none;
+        transition: background-color 200ms ease, border-color 200ms ease, color 200ms ease, transform 200ms ease, box-shadow 200ms ease;
+    }
+
+    .ds-button:hover {
+        text-decoration: none;
+        transform: scale(1.02);
+    }
+
+    .ds-button-primary {
+        background: var(--color-primary-blue);
+        color: #FFFFFF;
+        box-shadow: 0 10px 24px rgba(15, 76, 129, 0.18);
+    }
+
+    .ds-button-primary:hover {
+        background: #0B3E6A;
+        color: #FFFFFF;
+    }
+
+    .ds-button-secondary {
+        border-color: var(--color-border-soft);
+        background: #FFFFFF;
+        color: var(--color-primary-blue);
+    }
+
+    .ds-button-secondary:hover {
+        border-color: var(--color-secondary-blue);
+        background: #F0F7FF;
+        color: var(--color-primary-blue);
+    }
+
+    .ds-link {
+        color: var(--color-secondary-blue);
+        font-weight: 500;
+        text-decoration: none;
+    }
+
+    .ds-link:hover {
+        color: var(--color-primary-blue);
+        text-decoration: underline;
+    }
+
+    .ds-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border-radius: 999px;
+        border: 1px solid #BFD9EF;
+        background: #EFF6FF;
+        color: var(--color-primary-blue);
+        padding: 4px 10px;
+        font-size: var(--font-size-small);
+        font-weight: 600;
+        line-height: var(--line-height-small);
+    }
+
+    .ds-input {
+        width: 100%;
+        border: 1px solid var(--color-border-soft);
+        border-radius: 10px;
+        background: #FFFFFF;
+        padding: 10px 12px;
+        color: #172033;
+        font-size: 16px;
+        line-height: 24px;
+        transition: border-color 200ms ease, box-shadow 200ms ease;
+    }
+
+    .ds-input:focus {
+        border-color: var(--color-secondary-blue);
+        box-shadow: 0 0 0 3px rgba(29, 112, 184, 0.14);
+        outline: none;
+    }
+
+    .ds-label {
+        display: block;
+        margin-bottom: 8px;
+        color: #172033;
+        font-size: var(--font-size-small);
+        font-weight: 600;
+        line-height: var(--line-height-small);
+    }
+}
+
+@layer utilities {
+    .ds-fade {
+        animation: var(--animate-fade);
+    }
+
+    .ds-slide-up {
+        animation: var(--animate-slide-up);
+    }
+}
