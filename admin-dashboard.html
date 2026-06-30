@@ -257,6 +257,110 @@
             box-shadow: 0 0 0 3px rgba(7, 90, 154, 0.12);
         }
 
+        .editor-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid var(--line);
+            border-radius: 6px 6px 0 0;
+            background: #f7fbff;
+            padding: 8px;
+        }
+
+        .editor-toolbar button,
+        .editor-toolbar select {
+            width: auto;
+            min-height: 34px;
+            border: 1px solid #c8d4df;
+            border-radius: 5px;
+            background: #ffffff;
+            color: var(--ink);
+            padding: 6px 10px;
+            font: inherit;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .editor-toolbar button:hover {
+            border-color: var(--blue);
+            color: var(--blue);
+        }
+
+        .editor-toolbar select {
+            cursor: default;
+            font-weight: 600;
+        }
+
+        .editor-toolbar + textarea {
+            border-top: 0;
+            border-radius: 0 0 6px 6px;
+        }
+
+        .rich-text-source {
+            display: none;
+        }
+
+        .rich-text-editor {
+            width: 100%;
+            min-height: 130px;
+            border: 1px solid #c8d4df;
+            border-top: 0;
+            border-radius: 0 0 6px 6px;
+            padding: 10px;
+            color: var(--ink);
+            font: inherit;
+            background: #ffffff;
+            outline: none;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .rich-text-editor:focus {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(7, 90, 154, 0.12);
+        }
+
+        .rich-text-editor:empty::before {
+            content: attr(data-placeholder);
+            color: #98a2b3;
+            pointer-events: none;
+        }
+
+        .rich-text-large {
+            font-size: 1.22em;
+            line-height: 1.55;
+            font-weight: 700;
+        }
+
+        .rich-text-small {
+            font-size: 0.88em;
+            line-height: 1.7;
+        }
+
+        .rich-text-editor [lang="hi"],
+        .list [lang="hi"],
+        .tender-table [lang="hi"] {
+            font-family: "Nirmala UI", "Mangal", "Segoe UI", sans-serif;
+        }
+
+        .rich-text-editor [lang="ur"],
+        .list [lang="ur"],
+        .tender-table [lang="ur"] {
+            direction: rtl;
+            unicode-bidi: isolate;
+            font-family: "Nirmala UI", "Segoe UI", sans-serif;
+        }
+
+        .editor-help {
+            margin-top: 6px;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
         .primary-button {
             width: fit-content;
             min-width: 150px;
@@ -283,6 +387,42 @@
             font-weight: 700;
             padding: 4px;
             margin-left: 8px;
+        }
+
+        .edit-button {
+            background: transparent;
+            border: 0;
+            color: var(--blue);
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 4px;
+            margin-left: 8px;
+        }
+
+        .form-actions {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .secondary-button {
+            width: fit-content;
+            min-width: 110px;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            background: #ffffff;
+            color: var(--ink);
+            padding: 11px 16px;
+            font: inherit;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .secondary-button:hover {
+            border-color: var(--blue);
+            color: var(--blue);
         }
 
         .list {
@@ -509,6 +649,15 @@
                 margin-left: 0;
             }
 
+            .edit-button {
+                margin-left: 0;
+            }
+
+            .form-actions,
+            .secondary-button {
+                width: 100%;
+            }
+
             .tender-heading {
                 font-size: 26px;
             }
@@ -541,6 +690,7 @@
                     <li><button type="button" data-page="latest-updates">Latest Updates</button></li>
                     <li><button type="button" data-page="announcements">Announcements</button></li>
                     <li><button type="button" data-page="menu-content">Menu Content</button></li>
+                    <li><button type="button" data-page="contact-details">Contact Details</button></li>
                     <li><button type="button" data-page="tenders">Tenders</button></li>
                     <li><button type="button" data-page="settings">Settings</button></li>
                 </ul>
@@ -600,7 +750,7 @@
             <section id="announcements" class="page">
                 <div class="grid two-column">
                     <section class="card">
-                        <h2>Add Announcement</h2>
+                        <h2 id="announcements-form-title">Add Announcement</h2>
                         <form id="announcements-form" class="form-grid">
                             <div>
                                 <label for="announcement-title">Title</label>
@@ -610,7 +760,11 @@
                                 <label for="announcement-content">Content</label>
                                 <textarea id="announcement-content" name="content" required></textarea>
                             </div>
-                            <button class="primary-button" type="submit">Add Announcement</button>
+                            <div class="form-actions">
+                                <button class="primary-button" id="announcements-submit" type="submit">Add Announcement</button>
+                                <button class="secondary-button" id="announcements-cancel-edit" type="button" hidden>Cancel</button>
+                            </div>
+                            <div class="message" id="announcements-message"></div>
                         </form>
                     </section>
                     <section class="card">
@@ -635,7 +789,19 @@
                             </div>
                             <div>
                                 <label for="menu-content-details">Details</label>
+                                <div class="editor-toolbar" data-editor-target="menu-content-details" aria-label="Text formatting tools">
+                                    <button type="button" data-rich-command="bold">Bold</button>
+                                    <button type="button" data-rich-command="large">Text Big</button>
+                                    <button type="button" data-rich-command="small">Text Small</button>
+                                    <select id="menu-content-language" data-rich-language-select aria-label="Text language">
+                                        <option value="en">English</option>
+                                        <option value="hi">Hindi</option>
+                                        <option value="ur">Urdu</option>
+                                    </select>
+                                    <button type="button" data-rich-command="language">Apply Language</button>
+                                </div>
                                 <textarea id="menu-content-details" name="content" required></textarea>
+                                <p class="editor-help">Select text, then use formatting buttons. Save Details will publish it on the page.</p>
                             </div>
                             <div>
                                 <label for="menu-content-images">Images</label>
@@ -658,9 +824,79 @@
                 </div>
             </section>
 
+            <section id="contact-details" class="page">
+                <div class="grid two-column">
+                    <section class="card">
+                        <h2>Edit Contact Details</h2>
+                        <form id="contact-details-form" class="form-grid">
+                            <div class="form-row">
+                                <div>
+                                    <label for="contact-primary-email">Primary Email</label>
+                                    <input type="email" id="contact-primary-email" name="primaryEmail" required>
+                                </div>
+                                <div>
+                                    <label for="contact-secondary-email">Secondary Email</label>
+                                    <input type="email" id="contact-secondary-email" name="secondaryEmail" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div>
+                                    <label for="contact-phone-display">Phone Display Text</label>
+                                    <input type="text" id="contact-phone-display" name="phoneDisplay" required>
+                                </div>
+                                <div>
+                                    <label for="contact-phone-link">Phone Link Number</label>
+                                    <input type="text" id="contact-phone-link" name="phoneLink" placeholder="+911332265174" required>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="contact-address">Address</label>
+                                <input type="text" id="contact-address" name="address" required>
+                            </div>
+                            <div class="form-row">
+                                <div>
+                                    <label for="contact-fax">Fax</label>
+                                    <input type="text" id="contact-fax" name="fax">
+                                </div>
+                                <div>
+                                    <label for="contact-title">Contact Page Heading</label>
+                                    <input type="text" id="contact-title" name="contactTitle">
+                                </div>
+                            </div>
+                            <div>
+                                <label for="contact-director-title">Officer / Director Title</label>
+                                <input type="text" id="contact-director-title" name="directorTitle">
+                            </div>
+                            <div>
+                                <label for="contact-query-text">Query Text</label>
+                                <div class="editor-toolbar" data-editor-target="contact-query-text" aria-label="Text formatting tools">
+                                    <button type="button" data-rich-command="bold">Bold</button>
+                                    <button type="button" data-rich-command="large">Text Big</button>
+                                    <button type="button" data-rich-command="small">Text Small</button>
+                                    <select id="contact-query-language" data-rich-language-select aria-label="Text language">
+                                        <option value="en">English</option>
+                                        <option value="hi">Hindi</option>
+                                        <option value="ur">Urdu</option>
+                                    </select>
+                                    <button type="button" data-rich-command="language">Apply Language</button>
+                                </div>
+                                <textarea id="contact-query-text" name="queryText"></textarea>
+                                <p class="editor-help">Select text, then use formatting buttons.</p>
+                            </div>
+                            <button class="primary-button" type="submit">Save Contact Details</button>
+                            <div class="message" id="contact-details-message"></div>
+                        </form>
+                    </section>
+                    <section class="card">
+                        <h2>Current Website Contact</h2>
+                        <div id="contact-details-preview" class="list"></div>
+                    </section>
+                </div>
+            </section>
+
             <section id="tenders" class="page">
                 <section class="card">
-                    <h2>Add Tender</h2>
+                    <h2 id="tenders-form-title">Add Tender</h2>
                     <form id="tenders-form" class="form-grid">
                         <div class="form-row">
                             <div>
@@ -692,9 +928,25 @@
                         </div>
                         <div>
                             <label for="tender-description">Description</label>
+                            <div class="editor-toolbar" data-editor-target="tender-description" aria-label="Text formatting tools">
+                                <button type="button" data-rich-command="bold">Bold</button>
+                                <button type="button" data-rich-command="large">Text Big</button>
+                                <button type="button" data-rich-command="small">Text Small</button>
+                                <select id="tender-description-language" data-rich-language-select aria-label="Text language">
+                                    <option value="en">English</option>
+                                    <option value="hi">Hindi</option>
+                                    <option value="ur">Urdu</option>
+                                </select>
+                                <button type="button" data-rich-command="language">Apply Language</button>
+                            </div>
                             <textarea id="tender-description" name="description" required></textarea>
+                            <p class="editor-help">Select text, then use formatting buttons.</p>
                         </div>
-                        <button class="primary-button" type="submit">Add Tender</button>
+                        <div class="form-actions">
+                            <button class="primary-button" id="tenders-submit" type="submit">Add Tender</button>
+                            <button class="secondary-button" id="tenders-cancel-edit" type="button" hidden>Cancel</button>
+                        </div>
+                        <div class="message" id="tenders-message"></div>
                     </form>
                 </section>
 
@@ -757,13 +1009,17 @@
                 updates: '',
                 announcements: [],
                 tenders: [],
-                menuContent: {}
+                menuContent: {},
+                contactDetails: {}
             };
 
             let menuAssets = {
                 images: [],
                 pdfs: []
             };
+
+            let editingAnnouncementId = null;
+            let editingTenderId = null;
 
             const menuItems = [
                 { key: 'home', label: 'Home' },
@@ -827,6 +1083,7 @@
                 'latest-updates': { title: 'Latest Updates', subtitle: 'Edit the update text shown on the public website.' },
                 announcements: { title: 'Announcements', subtitle: 'Create and review public announcements.' },
                 'menu-content': { title: 'Menu Content', subtitle: 'Fill details for website menu and submenu pages.' },
+                'contact-details': { title: 'Contact Details', subtitle: 'Edit the emails, phone number, and address shown on the public website.' },
                 tenders: { title: 'Tenders', subtitle: 'Publish and review tender information.' },
                 settings: { title: 'Settings', subtitle: 'Manage admin account access.' }
             };
@@ -877,9 +1134,35 @@
                                 <strong>${escapeHtml(a.title)}</strong>
                                 <p>${escapeHtml(a.content)}</p>
                             </div>
-                            <button class="delete-button" data-id="${a.id}" data-type="announcements">DELETE</button>
+                            <div>
+                                <button class="edit-button" data-id="${a.id}" data-type="announcements">EDIT</button>
+                                <button class="delete-button" data-id="${a.id}" data-type="announcements">DELETE</button>
+                            </div>
                         </div>
                     </div>`).join('');
+            };
+
+            const resetAnnouncementForm = () => {
+                editingAnnouncementId = null;
+                document.getElementById('announcements-form').reset();
+                document.getElementById('announcements-form-title').textContent = 'Add Announcement';
+                document.getElementById('announcements-submit').textContent = 'Add Announcement';
+                document.getElementById('announcements-cancel-edit').hidden = true;
+                document.getElementById('announcements-message').textContent = '';
+            };
+
+            const startAnnouncementEdit = (id) => {
+                const announcement = state.announcements.find(a => String(a.id) === String(id));
+                if (!announcement) return;
+                editingAnnouncementId = announcement.id;
+                document.getElementById('announcement-title').value = announcement.title || '';
+                document.getElementById('announcement-content').value = announcement.content || '';
+                document.getElementById('announcements-form-title').textContent = 'Update Announcement';
+                document.getElementById('announcements-submit').textContent = 'Update Announcement';
+                document.getElementById('announcements-cancel-edit').hidden = false;
+                document.getElementById('announcements-message').textContent = '';
+                showPage('announcements');
+                document.getElementById('announcement-title').focus();
             };
 
             const populateMenuOptions = () => {
@@ -892,7 +1175,7 @@
                 const fallback = menuItems.find(item => item.key === key);
                 const saved = state.menuContent[key] || {};
                 document.getElementById('menu-content-title').value = saved.label || (fallback ? fallback.label.split(' > ').pop() : '');
-                document.getElementById('menu-content-details').value = saved.content || '';
+                setRichTextValue('menu-content-details', saved.content || '');
                 menuAssets = {
                     images: Array.isArray(saved.images) ? [...saved.images] : [],
                     pdfs: Array.isArray(saved.pdfs) ? [...saved.pdfs] : []
@@ -964,6 +1247,195 @@
                 return uploaded;
             };
 
+            const allowRichTextTags = (escapedText = '') => String(escapedText)
+                .replace(/&lt;strong&gt;/g, '<strong>')
+                .replace(/&lt;\/strong&gt;/g, '</strong>')
+                .replace(/&lt;b&gt;/g, '<strong>')
+                .replace(/&lt;\/b&gt;/g, '</strong>')
+                .replace(/&lt;span class=&quot;rich-text-large&quot;&gt;/g, '<span class="rich-text-large">')
+                .replace(/&lt;span class=&quot;rich-text-small&quot;&gt;/g, '<span class="rich-text-small">')
+                .replace(/&lt;span lang=&quot;(en|hi|ur)&quot;&gt;/g, '<span lang="$1">')
+                .replace(/&lt;\/span&gt;/g, '</span>');
+
+            const richTextInline = (content = '') => allowRichTextTags(escapeHtml(content));
+
+            const storageToEditorHtml = (content = '') => richTextInline(content).replace(/\n/g, '<br>');
+
+            const getSelectionRangeInside = (editor) => {
+                const selection = window.getSelection();
+                if (!selection || !selection.rangeCount) return null;
+                const range = selection.getRangeAt(0);
+                return editor.contains(range.commonAncestorContainer) ? range : null;
+            };
+
+            const selectNodeContents = (node) => {
+                const selection = window.getSelection();
+                if (!selection) return;
+                const range = document.createRange();
+                range.selectNodeContents(node);
+                selection.removeAllRanges();
+                selection.addRange(range);
+            };
+
+            const wrapSelectedEditorContent = (editor, wrapper) => {
+                editor.focus();
+                const range = getSelectionRangeInside(editor);
+                if (!range || range.collapsed) return false;
+
+                try {
+                    range.surroundContents(wrapper);
+                } catch (error) {
+                    const selectedContent = range.extractContents();
+                    wrapper.appendChild(selectedContent);
+                    range.insertNode(wrapper);
+                }
+
+                selectNodeContents(wrapper);
+                return true;
+            };
+
+            const serializeRichTextNode = (node) => {
+                if (node.nodeType === Node.TEXT_NODE) {
+                    return escapeHtml(node.textContent.replace(/\u00a0/g, ' '));
+                }
+
+                if (node.nodeType !== Node.ELEMENT_NODE) return '';
+
+                const tag = node.tagName.toLowerCase();
+                if (tag === 'br') return '\n';
+
+                const children = [...node.childNodes].map(serializeRichTextNode).join('');
+                if (!children && tag !== 'div' && tag !== 'p') return '';
+
+                if (tag === 'strong' || tag === 'b') {
+                    return `<strong>${children}</strong>`;
+                }
+
+                if (tag === 'span') {
+                    if (node.classList.contains('rich-text-large')) {
+                        return `<span class="rich-text-large">${children}</span>`;
+                    }
+                    if (node.classList.contains('rich-text-small')) {
+                        return `<span class="rich-text-small">${children}</span>`;
+                    }
+                    if (['en', 'hi', 'ur'].includes(node.getAttribute('lang'))) {
+                        return `<span lang="${node.getAttribute('lang')}">${children}</span>`;
+                    }
+                }
+
+                if (tag === 'div' || tag === 'p') {
+                    return `${children}\n`;
+                }
+
+                return children;
+            };
+
+            const editorToStorageHtml = (editor) => [...editor.childNodes]
+                .map(serializeRichTextNode)
+                .join('')
+                .replace(/\n{3,}/g, '\n\n')
+                .trim();
+
+            const syncRichTextEditor = (textarea) => {
+                if (!textarea || !textarea._richTextEditor) return;
+                textarea.value = editorToStorageHtml(textarea._richTextEditor);
+            };
+
+            const syncRichTextEditors = (root = document) => {
+                root.querySelectorAll('textarea.rich-text-source').forEach(syncRichTextEditor);
+            };
+
+            const setRichTextValue = (textareaOrId, value = '') => {
+                const textarea = typeof textareaOrId === 'string'
+                    ? document.getElementById(textareaOrId)
+                    : textareaOrId;
+                if (!textarea) return;
+                textarea.value = value || '';
+                if (textarea._richTextEditor) {
+                    textarea._richTextEditor.innerHTML = storageToEditorHtml(textarea.value);
+                }
+            };
+
+            const setupRichTextEditor = () => {
+                document.querySelectorAll('.editor-toolbar[data-editor-target]').forEach((toolbar) => {
+                    const textarea = document.getElementById(toolbar.dataset.editorTarget);
+                    const languageSelect = toolbar.querySelector('[data-rich-language-select]');
+                    if (!textarea || !languageSelect) return;
+                    if (textarea._richTextEditor) return;
+
+                    textarea.classList.add('rich-text-source');
+                    textarea.removeAttribute('required');
+                    textarea.setAttribute('aria-hidden', 'true');
+                    textarea.tabIndex = -1;
+
+                    const editor = document.createElement('div');
+                    editor.id = `${textarea.id}-editor`;
+                    editor.className = 'rich-text-editor';
+                    editor.contentEditable = 'true';
+                    editor.role = 'textbox';
+                    editor.setAttribute('aria-multiline', 'true');
+                    editor.setAttribute('aria-label', textarea.previousElementSibling?.textContent || 'Rich text editor');
+                    editor.dataset.placeholder = 'Type content here';
+                    editor.innerHTML = storageToEditorHtml(textarea.value);
+                    textarea.after(editor);
+                    textarea._richTextEditor = editor;
+
+                    const applyEditorLanguage = () => {
+                        const lang = languageSelect.value;
+                        editor.lang = lang;
+                        editor.dir = lang === 'ur' ? 'rtl' : 'ltr';
+                    };
+
+                    languageSelect.addEventListener('change', applyEditorLanguage);
+                    applyEditorLanguage();
+
+                    toolbar.addEventListener('mousedown', (event) => {
+                        if (event.target.closest('button[data-rich-command]')) {
+                            event.preventDefault();
+                        }
+                    });
+
+                    editor.addEventListener('input', () => syncRichTextEditor(textarea));
+                    editor.addEventListener('paste', (event) => {
+                        event.preventDefault();
+                        const text = event.clipboardData.getData('text/plain');
+                        document.execCommand('insertText', false, text);
+                        syncRichTextEditor(textarea);
+                    });
+
+                    toolbar.addEventListener('click', (event) => {
+                        const button = event.target.closest('[data-rich-command]');
+                        if (!button) return;
+
+                        const command = button.dataset.richCommand;
+                        if (command === 'bold') {
+                            editor.focus();
+                            document.execCommand('bold', false, null);
+                        } else if (command === 'large') {
+                            const span = document.createElement('span');
+                            span.className = 'rich-text-large';
+                            wrapSelectedEditorContent(editor, span);
+                        } else if (command === 'small') {
+                            const span = document.createElement('span');
+                            span.className = 'rich-text-small';
+                            wrapSelectedEditorContent(editor, span);
+                        } else if (command === 'language') {
+                            const span = document.createElement('span');
+                            span.lang = languageSelect.value;
+                            if (!wrapSelectedEditorContent(editor, span)) applyEditorLanguage();
+                        }
+
+                        syncRichTextEditor(textarea);
+                    });
+                });
+            };
+
+            const stripRichTextTags = (content = '') => {
+                const template = document.createElement('template');
+                template.innerHTML = storageToEditorHtml(content);
+                return template.content.textContent || '';
+            };
+
             const renderMenuContent = () => {
                 const list = document.getElementById('menu-content-list');
                 const savedKeys = Object.keys(state.menuContent);
@@ -976,13 +1448,51 @@
                     .filter(item => state.menuContent[item.key])
                     .map(item => {
                         const saved = state.menuContent[item.key];
+                        const previewText = stripRichTextTags(saved.content || '');
                         return `
                             <div class="list-item">
                                 <strong>${escapeHtml(saved.label || item.label)}</strong>
-                                <p>${escapeHtml(saved.content).slice(0, 180)}${saved.content.length > 180 ? '...' : ''}</p>
+                                <p>${escapeHtml(previewText).slice(0, 180)}${previewText.length > 180 ? '...' : ''}</p>
                                 <p>${(saved.images || []).length} image(s), ${(saved.pdfs || []).length} PDF(s)</p>
                             </div>`;
                     }).join('');
+            };
+
+            const loadContactDetailsForm = () => {
+                const contact = state.contactDetails || {};
+                document.getElementById('contact-primary-email').value = contact.primaryEmail || '';
+                document.getElementById('contact-secondary-email').value = contact.secondaryEmail || '';
+                document.getElementById('contact-phone-display').value = contact.phoneDisplay || '';
+                document.getElementById('contact-phone-link').value = contact.phoneLink || '';
+                document.getElementById('contact-address').value = contact.address || '';
+                document.getElementById('contact-fax').value = contact.fax || '';
+                document.getElementById('contact-title').value = contact.contactTitle || '';
+                document.getElementById('contact-director-title').value = contact.directorTitle || '';
+                setRichTextValue('contact-query-text', contact.queryText || '');
+                renderContactDetailsPreview();
+            };
+
+            const renderContactDetailsPreview = () => {
+                const contact = state.contactDetails || {};
+                const preview = document.getElementById('contact-details-preview');
+                preview.innerHTML = `
+                    <div class="list-item">
+                        <strong>Top Bar</strong>
+                        <p>Email: ${escapeHtml(contact.primaryEmail || '')}</p>
+                        <p>${escapeHtml(contact.secondaryEmail || '')}</p>
+                        <p>Phone: ${escapeHtml(contact.phoneDisplay || '')}</p>
+                    </div>
+                    <div class="list-item">
+                        <strong>Contact Page</strong>
+                        <p>${escapeHtml(contact.directorTitle || '')}</p>
+                        <p>${escapeHtml(contact.address || '')}</p>
+                        <p>${escapeHtml(contact.queryText || '')}</p>
+                    </div>
+                    <div class="list-item">
+                        <strong>Footer</strong>
+                        <p>${escapeHtml(contact.phoneDisplay || '')}</p>
+                        <p>${escapeHtml(contact.secondaryEmail || '')}</p>
+                    </div>`;
             };
 
             const updateTenderCounts = () => {
@@ -1027,12 +1537,44 @@
                         <td>${escapeHtml(formatDate(t.startDate))}</td>
                         <td>${escapeHtml(formatDate(t.endDate))}</td>
                         <td>${escapeHtml(t.refNo || t.title || '')}</td>
-                        <td>${escapeHtml(t.description)}</td>
+                        <td>${richTextInline(t.description)}</td>
                         <td>${escapeHtml(t.officeDetail || '')}</td>
                         <td>${t.openLink ? `<a class="open-link" href="${escapeHtml(t.openLink)}" target="_blank" rel="noopener">Open</a>` : '-'}</td>
-                        <td class="tender-actions"><button class="delete-button" data-id="${t.id}" data-type="tenders">DELETE</button></td>
+                        <td class="tender-actions">
+                            <button class="edit-button" data-id="${t.id}" data-type="tenders">EDIT</button>
+                            <button class="delete-button" data-id="${t.id}" data-type="tenders">DELETE</button>
+                        </td>
                     </tr>`).join('');
                 updateTenderCounts();
+            };
+
+            const resetTenderForm = () => {
+                editingTenderId = null;
+                document.getElementById('tenders-form').reset();
+                setRichTextValue('tender-description', '');
+                document.getElementById('tenders-form-title').textContent = 'Add Tender';
+                document.getElementById('tenders-submit').textContent = 'Add Tender';
+                document.getElementById('tenders-cancel-edit').hidden = true;
+                document.getElementById('tenders-message').textContent = '';
+            };
+
+            const startTenderEdit = (id) => {
+                const tender = state.tenders.find(t => String(t.id) === String(id));
+                if (!tender) return;
+                editingTenderId = tender.id;
+                document.getElementById('tender-publish-date').value = tender.publishDate || '';
+                document.getElementById('tender-start-date').value = tender.startDate || '';
+                document.getElementById('tender-end-date').value = tender.endDate || '';
+                document.getElementById('tender-ref-no').value = tender.refNo || tender.title || '';
+                document.getElementById('tender-office-detail').value = tender.officeDetail || '';
+                document.getElementById('tender-open-link').value = tender.openLink || '';
+                setRichTextValue('tender-description', tender.description || '');
+                document.getElementById('tenders-form-title').textContent = 'Update Tender';
+                document.getElementById('tenders-submit').textContent = 'Update Tender';
+                document.getElementById('tenders-cancel-edit').hidden = false;
+                document.getElementById('tenders-message').textContent = '';
+                showPage('tenders');
+                document.getElementById('tender-publish-date').focus();
             };
 
             const updateStats = () => {
@@ -1040,6 +1582,7 @@
                 document.getElementById('menu-content-count').textContent = Object.keys(state.menuContent || {}).length;
                 document.getElementById('tenders-count').textContent = state.tenders.length;
                 document.getElementById('update-content').value = state.updates;
+                renderContactDetailsPreview();
             };
 
             const fetchData = async () => {
@@ -1063,16 +1606,29 @@
                     state[type] = state[type].filter(item => item.id != id);
                     if (type === 'announcements') renderAnnouncements();
                     if (type === 'tenders') renderTenders();
+                    if (type === 'announcements' && String(editingAnnouncementId) === String(id)) resetAnnouncementForm();
+                    if (type === 'tenders' && String(editingTenderId) === String(id)) resetTenderForm();
                     updateStats();
                 } else {
                     alert(`Failed to delete ${type.slice(0, -1)}.`);
                 }
             };
 
+            const handleEdit = (e) => {
+                const button = e.target.closest('.edit-button');
+                if (!button) return;
+                if (button.dataset.type === 'announcements') startAnnouncementEdit(button.dataset.id);
+                if (button.dataset.type === 'tenders') startTenderEdit(button.dataset.id);
+            };
+
             const setupEventListeners = () => {
                 document.querySelectorAll('.nav button').forEach(b => b.addEventListener('click', () => showPage(b.dataset.page)));
                 document.getElementById('announcements-list').addEventListener('click', handleDelete);
+                document.getElementById('announcements-list').addEventListener('click', handleEdit);
                 document.getElementById('tenders-list').addEventListener('click', handleDelete);
+                document.getElementById('tenders-list').addEventListener('click', handleEdit);
+                document.getElementById('announcements-cancel-edit').addEventListener('click', resetAnnouncementForm);
+                document.getElementById('tenders-cancel-edit').addEventListener('click', resetTenderForm);
                 document.getElementById('menu-content-key').addEventListener('change', loadSelectedMenuContent);
                 document.getElementById('menu-images-list').addEventListener('click', (e) => {
                     const button = e.target.closest('[data-asset-type]');
@@ -1148,23 +1704,36 @@
                 document.getElementById('announcements-form').addEventListener('submit', async (e) => {
                     e.preventDefault();
                     const form = e.target;
-                    const response = await fetch('/api/announcements', {
-                        method: 'POST',
+                    const messageDiv = document.getElementById('announcements-message');
+                    const isEditing = editingAnnouncementId !== null;
+                    const response = await fetch(isEditing ? `/api/announcements/${editingAnnouncementId}` : '/api/announcements', {
+                        method: isEditing ? 'PUT' : 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(Object.fromEntries(new FormData(form)))
                     });
                     if (response.ok) {
-                        const newAnnouncement = await response.json();
-                        state.announcements.unshift(newAnnouncement);
+                        const savedAnnouncement = await response.json();
+                        if (isEditing) {
+                            state.announcements = state.announcements.map(item => String(item.id) === String(savedAnnouncement.id) ? savedAnnouncement : item);
+                        } else {
+                            state.announcements.unshift(savedAnnouncement);
+                        }
                         renderAnnouncements();
                         updateStats();
-                        form.reset();
+                        resetAnnouncementForm();
+                        messageDiv.textContent = isEditing ? 'Announcement updated successfully.' : 'Announcement added successfully.';
+                        messageDiv.style.color = 'var(--green)';
+                    } else {
+                        const result = await response.json().catch(() => ({ message: 'Failed to save announcement.' }));
+                        messageDiv.textContent = result.message;
+                        messageDiv.style.color = 'var(--red)';
                     }
                 });
 
                 document.getElementById('menu-content-form').addEventListener('submit', async (e) => {
                     e.preventDefault();
                     const form = e.target;
+                    syncRichTextEditors(form);
                     const payload = Object.fromEntries(new FormData(form));
                     payload.images = menuAssets.images;
                     payload.pdfs = menuAssets.pdfs;
@@ -1184,20 +1753,53 @@
                     }
                 });
 
+                document.getElementById('contact-details-form').addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const form = e.target;
+                    syncRichTextEditors(form);
+                    const payload = Object.fromEntries(new FormData(form));
+                    const messageDiv = document.getElementById('contact-details-message');
+                    const response = await fetch('/api/contact-details', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const result = await response.json();
+                    messageDiv.textContent = result.message;
+                    messageDiv.style.color = response.ok ? 'var(--green)' : 'var(--red)';
+                    if (response.ok) {
+                        state.contactDetails = result.contactDetails;
+                        loadContactDetailsForm();
+                    }
+                });
+
                 document.getElementById('tenders-form').addEventListener('submit', async (e) => {
                     e.preventDefault();
                     const form = e.target;
-                    const response = await fetch('/api/tenders', {
-                        method: 'POST',
+                    syncRichTextEditors(form);
+                    const messageDiv = document.getElementById('tenders-message');
+                    const isEditing = editingTenderId !== null;
+                    const response = await fetch(isEditing ? `/api/tenders/${editingTenderId}` : '/api/tenders', {
+                        method: isEditing ? 'PUT' : 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(Object.fromEntries(new FormData(form)))
                     });
                     if (response.ok) {
-                        const newTender = await response.json();
-                        state.tenders.unshift(newTender);
+                        const savedTender = await response.json();
+                        if (isEditing) {
+                            state.tenders = state.tenders.map(item => String(item.id) === String(savedTender.id) ? savedTender : item);
+                        } else {
+                            state.tenders.unshift(savedTender);
+                        }
                         renderTenders();
                         updateStats();
-                        form.reset();
+                        resetTenderForm();
+                        messageDiv.textContent = isEditing ? 'Tender updated successfully.' : 'Tender added successfully.';
+                        messageDiv.style.color = 'var(--green)';
+                    } else {
+                        const result = await response.json().catch(() => ({ message: 'Failed to save tender.' }));
+                        messageDiv.textContent = result.message;
+                        messageDiv.style.color = 'var(--red)';
                     }
                 });
             };
@@ -1209,8 +1811,10 @@
                 renderAnnouncements();
                 renderMenuContent();
                 loadSelectedMenuContent();
+                loadContactDetailsForm();
                 renderTenders();
                 setupEventListeners();
+                setupRichTextEditor();
                 showPage('dashboard');
             };
 

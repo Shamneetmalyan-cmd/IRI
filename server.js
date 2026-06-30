@@ -10,6 +10,18 @@ const port = process.env.PORT || 3000;
 const DB_PATH = path.join(__dirname, 'db.json');
 const UPLOAD_DIR = path.join(__dirname, 'uploads');
 
+const defaultContactDetails = {
+    primaryEmail: 'ce@iriroorkee.res.in',
+    secondaryEmail: 'info@iriroorkee.res.in',
+    phoneDisplay: '+91-1332-265174',
+    phoneLink: '+911332265174',
+    address: 'Irrigation Research Institute, Roorkee, Uttarakhand',
+    fax: '+91 - 1332 - 262487',
+    contactTitle: 'An ISO 9001: 2008 Certified Organization',
+    directorTitle: 'Chief Engineer (Design) & Director',
+    queryText: 'For any Information/Query related to Hydraulic Model Study/Testing etc.'
+};
+
 function normalizeData(data = {}) {
     return {
         updates: typeof data.updates === 'string' ? data.updates : '',
@@ -17,7 +29,10 @@ function normalizeData(data = {}) {
         tenders: Array.isArray(data.tenders) ? data.tenders : [],
         menuContent: data.menuContent && typeof data.menuContent === 'object' && !Array.isArray(data.menuContent)
             ? data.menuContent
-            : {}
+            : {},
+        contactDetails: data.contactDetails && typeof data.contactDetails === 'object' && !Array.isArray(data.contactDetails)
+            ? { ...defaultContactDetails, ...data.contactDetails }
+            : { ...defaultContactDetails }
     };
 }
 
@@ -122,6 +137,7 @@ app.get('/api/data', requireLogin, (req, res) => {
 
 app.get('/api/public-data', (req, res) => {
     const data = readData();
+    res.set('Cache-Control', 'no-store');
     res.json(data);
 });
 
@@ -136,6 +152,40 @@ app.post('/api/updates', requireLogin, (req, res) => {
     res.json({ message: 'Updates saved successfully!' });
 });
 
+app.post('/api/contact-details', requireLogin, (req, res) => {
+    const {
+        primaryEmail,
+        secondaryEmail,
+        phoneDisplay,
+        phoneLink,
+        address,
+        fax,
+        contactTitle,
+        directorTitle,
+        queryText
+    } = req.body;
+
+    if (!primaryEmail || !secondaryEmail || !phoneDisplay || !phoneLink || !address) {
+        return res.status(400).json({ message: 'Primary email, secondary email, phone, phone link, and address are required.' });
+    }
+
+    const data = readData();
+    data.contactDetails = {
+        primaryEmail: String(primaryEmail).trim(),
+        secondaryEmail: String(secondaryEmail).trim(),
+        phoneDisplay: String(phoneDisplay).trim(),
+        phoneLink: String(phoneLink).trim(),
+        address: String(address).trim(),
+        fax: String(fax || '').trim(),
+        contactTitle: String(contactTitle || defaultContactDetails.contactTitle).trim(),
+        directorTitle: String(directorTitle || defaultContactDetails.directorTitle).trim(),
+        queryText: String(queryText || defaultContactDetails.queryText).trim(),
+        updatedAt: new Date().toISOString()
+    };
+    writeData(data);
+    res.json({ message: 'Contact details saved successfully!', contactDetails: data.contactDetails });
+});
+
 app.post('/api/announcements', requireLogin, (req, res) => {
     const { title, content } = req.body;
     if (!title || !content) {
@@ -146,6 +196,29 @@ app.post('/api/announcements', requireLogin, (req, res) => {
     data.announcements.unshift(newAnnouncement);
     writeData(data);
     res.status(201).json(newAnnouncement);
+});
+
+app.put('/api/announcements/:id', requireLogin, (req, res) => {
+    const id = parseInt(req.params.id, 10);
+    const { title, content } = req.body;
+    if (!title || !content) {
+        return res.status(400).json({ message: 'Title and content are required.' });
+    }
+
+    const data = readData();
+    const index = data.announcements.findIndex(a => a.id === id);
+    if (index === -1) {
+        return res.status(404).json({ message: 'Announcement not found.' });
+    }
+
+    data.announcements[index] = {
+        ...data.announcements[index],
+        title,
+        content,
+        updatedAt: new Date().toISOString()
+    };
+    writeData(data);
+    res.json(data.announcements[index]);
 });
 
 app.delete('/api/announcements/:id', requireLogin, (req, res) => {
@@ -234,6 +307,34 @@ app.post('/api/tenders', requireLogin, (req, res) => {
     data.tenders.unshift(newTender);
     writeData(data);
     res.status(201).json(newTender);
+});
+
+app.put('/api/tenders/:id', requireLogin, (req, res) => {
+    const id = parseInt(req.params.id, 10);
+    const { publishDate, startDate, endDate, refNo, description, officeDetail, openLink } = req.body;
+    if (!publishDate || !startDate || !endDate || !refNo || !description || !officeDetail) {
+        return res.status(400).json({ message: 'All tender fields except open link are required.' });
+    }
+
+    const data = readData();
+    const index = data.tenders.findIndex(t => t.id === id);
+    if (index === -1) {
+        return res.status(404).json({ message: 'Tender not found.' });
+    }
+
+    data.tenders[index] = {
+        ...data.tenders[index],
+        publishDate,
+        startDate,
+        endDate,
+        refNo,
+        description,
+        officeDetail,
+        openLink: openLink || '',
+        updatedAt: new Date().toISOString()
+    };
+    writeData(data);
+    res.json(data.tenders[index]);
 });
 
 app.delete('/api/tenders/:id', requireLogin, (req, res) => {

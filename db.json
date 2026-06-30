@@ -48,10 +48,23 @@
           "type": "image/png",
           "size": 6974,
           "url": "/uploads/1782581777566-Screenshot-2026-06-27-115628.png"
+        },
+        {
+          "name": "WhatsApp-Image-2026-03-13-at-3.56.47-PM.jpeg",
+          "type": "image/jpeg",
+          "size": 137885,
+          "url": "/uploads/1782827704426-WhatsApp-Image-2026-03-13-at-3.56.47-PM.jpeg"
         }
       ],
-      "pdfs": [],
-      "updatedAt": "2026-06-27T17:36:19.925Z"
+      "pdfs": [
+        {
+          "name": "AdmitCard-260410659701.pdf",
+          "type": "application/pdf",
+          "size": 754691,
+          "url": "/uploads/1782827596951-AdmitCard-260410659701.pdf"
+        }
+      ],
+      "updatedAt": "2026-06-30T13:55:09.628Z"
     },
     "contact-us": {
       "label": "ghcytct",
@@ -59,6 +72,32 @@
       "images": [],
       "pdfs": [],
       "updatedAt": "2026-06-27T17:41:34.971Z"
+    },
+    "highway-lab": {
+      "label": "Highway Laboratory",
+      "content": "juyufytf\n",
+      "images": [],
+      "pdfs": [],
+      "updatedAt": "2026-06-30T14:18:27.431Z"
+    },
+    "introduction-hydraulic-model-studies": {
+      "label": "An Introduction to Hydraulic Model Studies",
+      "content": "yrsgtrfxdgfrxd",
+      "images": [],
+      "pdfs": [],
+      "updatedAt": "2026-06-30T14:17:59.811Z"
     }
+  },
+  "contactDetails": {
+    "primaryEmail": "ce@iriroorkee.res.in",
+    "secondaryEmail": "info@iriroorkee.res.in",
+    "phoneDisplay": "1+91-1332-265174",
+    "phoneLink": "2 +911332265174",
+    "address": "1Irrigation Research Institute, Roorkee, Uttarakhand",
+    "fax": "1+91 - 1332 - 262487",
+    "contactTitle": "2 An ISO 9001: 2008 Certified Organization",
+    "directorTitle": "3 Chief Engineer (Design) & Director",
+    "queryText": "For any Information/Query related to Hydraulic Model Study/Testing etc.",
+    "updatedAt": "2026-06-30T14:30:33.980Z"
   }
 }
