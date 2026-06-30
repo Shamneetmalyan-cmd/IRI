@@ -1,5 +1,64 @@
 {
-  "updates": "Welcome to the official portal of Irrigation Research Institute.",
-  "announcements": [],
-  "tenders": []
+  "updates": "sab kuch shi hai\n",
+  "announcements": [
+    {
+      "id": 1782581725393,
+      "title": "aniirudddh boy ",
+      "content": "cute boy ",
+      "date": "2026-06-27T17:35:25.393Z"
+    },
+    {
+      "id": 1782581710582,
+      "title": "shamneet malyan",
+      "content": "very good boy ",
+      "date": "2026-06-27T17:35:10.582Z"
+    }
+  ],
+  "tenders": [
+    {
+      "id": 1782581605158,
+      "publishDate": "0077-07-05",
+      "startDate": "0048-04-05",
+      "endDate": "0045-04-05",
+      "refNo": "4864877",
+      "description": " kgnerjgornpsbngkejipejg;orn",
+      "officeDetail": "487977",
+      "openLink": "",
+      "date": "2026-06-27T17:33:25.158Z"
+    },
+    {
+      "id": 1782581564197,
+      "publishDate": "5448-04-15",
+      "startDate": "0484-04-05",
+      "endDate": "0484-04-04",
+      "refNo": "48484484",
+      "description": "heuhhfiohughuervhuerhiuerhfilsbuerhvebvkdfbviuhenioerhgrwhf",
+      "officeDetail": "5484984",
+      "openLink": "",
+      "date": "2026-06-27T17:32:44.197Z"
+    }
+  ],
+  "menuContent": {
+    "about-iri-roorkee": {
+      "label": "About IRI Roorkeekrngiorgirgirw",
+      "content": "rwklnfrwkngirwgsjv jbvwfvjewbnfewughwengilrsbvurwrwnglneruvhernverinbhoerjgpoermgerngiorw",
+      "images": [
+        {
+          "name": "Screenshot-2026-06-27-115628.png",
+          "type": "image/png",
+          "size": 6974,
+          "url": "/uploads/1782581777566-Screenshot-2026-06-27-115628.png"
+        }
+      ],
+      "pdfs": [],
+      "updatedAt": "2026-06-27T17:36:19.925Z"
+    },
+    "contact-us": {
+      "label": "ghcytct",
+      "content": "jhiugbyfyfvvyggbbgiyg\n",
+      "images": [],
+      "pdfs": [],
+      "updatedAt": "2026-06-27T17:41:34.971Z"
+    }
+  }
 }

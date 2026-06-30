@@ -13,15 +13,45 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
+        :root {
+            --ink: #102a43;
+            --muted: #52677a;
+            --primary: #075d73;
+            --primary-dark: #043a4a;
+            --primary-soft: #e7f5f7;
+            --accent: #f28c28;
+            --accent-dark: #c95f12;
+            --danger: #b42318;
+            --surface: #ffffff;
+            --page-bg: #eef7f6;
+            --line: #cfe2e3;
+            --shadow: 0 14px 35px rgba(7, 93, 115, 0.13);
+        }
+
         body {
-            background-color: #f5f5f5;
+            background:
+                radial-gradient(circle at top left, rgba(242, 140, 40, 0.12), transparent 32%),
+                linear-gradient(180deg, #f7fbfa 0%, var(--page-bg) 45%, #f4f8fb 100%);
+            color: var(--ink);
+            overflow-x: hidden;
+        }
+
+        html {
+            overflow-x: hidden;
+        }
+
+        img,
+        video,
+        iframe {
+            max-width: 100%;
         }
 
         body.contact-open .news-ticker,
         body.contact-open .hero,
         body.contact-open .container,
         body.contact-open .tenders-section,
-        body.contact-open .contact-section {
+        body.contact-open .contact-section,
+        body.contact-open .dynamic-content-page {
             display: none;
         }
 
@@ -33,12 +63,22 @@
         body.tenders-open .hero,
         body.tenders-open .container,
         body.tenders-open .contact-section,
-        body.tenders-open .contact-page {
+        body.tenders-open .contact-page,
+        body.tenders-open .dynamic-content-page {
+            display: none;
+        }
+
+        body.content-open .news-ticker,
+        body.content-open .hero,
+        body.content-open .container,
+        body.content-open .tenders-section,
+        body.content-open .contact-section,
+        body.content-open .contact-page {
             display: none;
         }
 
         .top-info-bar {
-            background: #050505;
+            background: linear-gradient(90deg, var(--primary-dark), #0a6a7e);
             color: #ffffff;
             min-height: 34px;
             display: flex;
@@ -61,20 +101,23 @@
         }
 
         .employee-corner {
-            border: 1px solid #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.75);
             border-radius: 3px;
             padding: 1px 5px;
             cursor: context-menu;
             line-height: 1.2;
+            background: rgba(255, 255, 255, 0.12);
         }
 
         /* Top Header Section */
         header {
-            background-color: #ffffff;
+            background: linear-gradient(135deg, #ffffff 0%, #f1fbfa 100%);
             padding: 15px 40px;
             display: flex;
             align-items: center;
-            border-bottom: 4px solid #004b87;
+            gap: 20px;
+            border-bottom: 4px solid var(--accent);
+            box-shadow: 0 8px 24px rgba(7, 93, 115, 0.08);
         }
 
         .site-logo {
@@ -83,26 +126,30 @@
             border-radius: 50%;
             object-fit: cover;
             object-position: center;
-            margin-right: 20px;
-            border: 2px solid #004b87;
+            border: 2px solid var(--primary);
             background-color: #ffffff;
             cursor: pointer;
+            flex: 0 0 auto;
+        }
+
+        .institute-title {
+            min-width: 0;
         }
 
         .institute-title h1 {
-            color: #b30000;
+            color: var(--danger);
             font-size: 26px;
             margin-bottom: 5px;
         }
 
         .institute-title h2 {
-            color: #333;
+            color: var(--ink);
             font-size: 16px;
             font-weight: 500;
         }
 
         .institute-title h3 {
-            color: #004b87;
+            color: var(--primary);
             font-size: 15px;
             font-weight: 600;
             margin-top: 4px;
@@ -113,6 +160,7 @@
             align-items: center;
             gap: 20px; /* Space between logos */
             margin-left: auto; /* Pushes the logos to the right */
+            flex: 0 0 auto;
         }
 
         .header-logos-right img {
@@ -122,7 +170,29 @@
 
         /* Navigation Bar */
         nav {
-            background-color: #004b87;
+            background: linear-gradient(90deg, var(--primary), #0b7891);
+            box-shadow: 0 6px 18px rgba(4, 58, 74, 0.2);
+        }
+
+        .mobile-menu-toggle {
+            display: none;
+            width: 44px;
+            height: 42px;
+            border: 0;
+            background: transparent;
+            color: #ffffff;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .mobile-menu-toggle span {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: currentColor;
+            display: block;
         }
 
         nav ul {
@@ -130,6 +200,7 @@
             display: flex;
             flex-wrap: wrap;
             padding-left: 20px;
+            max-width: 100%;
         }
 
         nav ul li a {
@@ -143,7 +214,7 @@
         }
 
         nav ul li a:hover {
-            background-color: #00335e;
+            background-color: rgba(255, 255, 255, 0.16);
         }
 
         /* Dropdown Menu Styles */
@@ -154,9 +225,9 @@
         nav ul li.dropdown .dropdown-content {
             display: none;
             position: absolute;
-            background-color: #004b87;
+            background-color: var(--primary);
             min-width: 260px;
-            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            box-shadow: 0px 14px 28px rgba(4,58,74,0.25);
             z-index: 1;
             list-style: none;
             padding-left: 0; /* Remove default padding for ul */
@@ -172,7 +243,7 @@
         }
 
         nav ul li.dropdown .dropdown-content li a:hover {
-            background-color: #00335e;
+            background-color: var(--primary-dark);
         }
 
         nav ul li.dropdown .dropdown-content li.dropdown-submenu {
@@ -192,17 +263,18 @@
 
         /* Marquee / News Ticker */
         .news-ticker {
-            background-color: #fff3cd;
-            color: #856404;
+            background-color: #fff7e8;
+            color: #74420c;
             padding: 10px 20px;
-            border-bottom: 1px solid #ffeeba;
+            border-bottom: 1px solid #f6d8a8;
             font-weight: bold;
             display: flex;
             align-items: center;
+            min-width: 0;
         }
 
         .news-ticker span {
-            background: #dc3545;
+            background: var(--danger);
             color: white;
             padding: 3px 10px;
             border-radius: 3px;
@@ -214,8 +286,8 @@
             height: 450px; /* Increased height for better image display */
             position: relative;
             overflow: hidden;
-            border-bottom: 3px solid #b30000;
-            background-color: #f0f0f0; /* Fallback color */
+            border-bottom: 4px solid var(--accent);
+            background-color: #dceff1; /* Fallback color */
         }
 
         .hero-slide {
@@ -255,41 +327,46 @@
             padding: 20px 40px;
             max-width: 1400px;
             margin: 0 auto;
+            width: 100%;
         }
 
         .main-content {
             flex: 3;
-            background: white;
+            min-width: 0;
+            background: var(--surface);
             padding: 25px;
             border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border: 1px solid rgba(207, 226, 227, 0.9);
+            box-shadow: var(--shadow);
         }
 
         .main-content h2 {
-            color: #004b87;
+            color: var(--primary);
             margin-bottom: 15px;
-            border-bottom: 2px solid #eee;
+            border-bottom: 2px solid var(--line);
             padding-bottom: 10px;
         }
 
         .main-content p {
             line-height: 1.6;
-            color: #444;
+            color: var(--muted);
             margin-bottom: 15px;
         }
 
         /* Sidebar / Notifications */
         .sidebar {
             flex: 1;
-            background: white;
-            border-top: 4px solid #b30000;
+            min-width: 260px;
+            background: #ffffff;
+            border-top: 4px solid var(--accent);
             padding: 20px;
             border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border: 1px solid rgba(207, 226, 227, 0.9);
+            box-shadow: var(--shadow);
         }
 
         .sidebar h3 {
-            color: #333;
+            color: var(--ink);
             margin-bottom: 15px;
             font-size: 18px;
         }
@@ -300,22 +377,259 @@
 
         .sidebar ul li {
             padding: 10px 0;
-            border-bottom: 1px dashed #ccc;
+            border-bottom: 1px dashed #b8d3d6;
             font-size: 14px;
         }
 
         .sidebar ul li a {
-            color: #004b87;
+            color: var(--primary);
             text-decoration: none;
         }
 
         .sidebar ul li a:hover {
             text-decoration: underline;
-            color: #b30000;
+            color: var(--accent-dark);
+        }
+
+        .dynamic-content-page {
+            display: none;
+            background: #ffffff;
+            min-height: 360px;
+            padding: 44px 40px 70px;
+        }
+
+        body.content-open .dynamic-content-page {
+            display: block;
+        }
+
+        .dynamic-content-inner {
+            max-width: 1180px;
+            margin: 0 auto;
+            background: #ffffff;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            box-shadow: var(--shadow);
+            padding: 32px;
+        }
+
+        .dynamic-content-inner h2 {
+            color: var(--primary);
+            font-size: 30px;
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--line);
+        }
+
+        .dynamic-content-body {
+            color: var(--muted);
+            font-size: 16px;
+            line-height: 1.8;
+            white-space: pre-line;
+            overflow-wrap: anywhere;
+        }
+
+        .content-detail {
+            display: grid;
+            grid-template-columns: minmax(250px, 34%) minmax(0, 1fr);
+            gap: 24px;
+            align-items: start;
+            white-space: normal;
+        }
+
+        .content-detail.no-assets {
+            grid-template-columns: 1fr;
+        }
+
+        .content-description {
+            background: linear-gradient(180deg, #ffffff 0%, #f7fcfc 100%);
+            border: 1px solid var(--line);
+            border-left: 5px solid var(--accent);
+            border-radius: 6px;
+            min-height: 260px;
+            padding: 24px 26px;
+            color: var(--ink);
+            box-shadow: 0 10px 24px rgba(7, 93, 115, 0.08);
+            white-space: normal;
+        }
+
+        .content-description h3 {
+            color: var(--primary);
+            font-size: 18px;
+            margin-bottom: 12px;
+        }
+
+        .content-description p {
+            margin-bottom: 12px;
+            color: var(--muted);
+            white-space: pre-wrap;
+        }
+
+        .content-description p:last-child {
+            margin-bottom: 0;
+        }
+
+        .content-description strong {
+            color: var(--ink);
+            font-weight: 800;
+        }
+
+        .rich-text-large {
+            display: inline-block;
+            font-size: 1.22em;
+            line-height: 1.55;
+            font-weight: 700;
+        }
+
+        .rich-text-small {
+            font-size: 0.88em;
+            line-height: 1.7;
+        }
+
+        .content-description [lang="hi"] {
+            font-family: "Nirmala UI", "Mangal", "Segoe UI", sans-serif;
+        }
+
+        .content-description [lang="ur"] {
+            direction: rtl;
+            unicode-bidi: isolate;
+            font-family: "Nirmala UI", "Segoe UI", sans-serif;
+        }
+
+        .content-assets {
+            margin-top: 28px;
+            display: grid;
+            gap: 20px;
+        }
+
+        .content-detail .content-assets {
+            margin-top: 0;
+            align-self: start;
+            background: #f8fcfc;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            padding: 18px;
+            box-shadow: 0 10px 24px rgba(7, 93, 115, 0.08);
+            white-space: normal;
+        }
+
+        .content-assets h3 {
+            color: var(--primary);
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+
+        .content-detail .content-assets h3 {
+            font-size: 16px;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .content-image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 14px;
+        }
+
+        .content-detail .content-image-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .content-image-grid img {
+            width: 100%;
+            aspect-ratio: 4 / 3;
+            object-fit: cover;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+        }
+
+        .content-detail .content-image-grid img {
+            aspect-ratio: 16 / 10;
+            max-height: 260px;
+            object-fit: contain;
+            background: #ffffff;
+            padding: 8px;
+        }
+
+        .content-image-slider {
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            aspect-ratio: 16 / 10;
+            max-height: 260px;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            background: #ffffff;
+        }
+
+        .content-image-slider img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 8px;
+            opacity: 0;
+            transform: translateX(16px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .content-image-slider img.active {
+            opacity: 1;
+            transform: translateX(0);
+            z-index: 1;
+        }
+
+        .content-slider-dots {
+            display: flex;
+            justify-content: center;
+            gap: 7px;
+            margin-top: 10px;
+            min-height: 8px;
+        }
+
+        .content-slider-dots span {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #a8c6ca;
+            transition: background 0.3s ease, transform 0.3s ease;
+        }
+
+        .content-slider-dots span.active {
+            background: var(--accent);
+            transform: scale(1.25);
+        }
+
+        .content-pdf-list {
+            display: grid;
+            gap: 10px;
+            list-style: none;
+        }
+
+        .content-pdf-list a {
+            display: inline-block;
+            color: var(--primary);
+            font-weight: 700;
+            text-decoration: none;
+            overflow-wrap: anywhere;
+        }
+
+        .content-detail .content-pdf-list a {
+            display: block;
+            background: #ffffff;
+            border: 1px solid var(--line);
+            border-radius: 5px;
+            padding: 10px 12px;
+            line-height: 1.4;
+        }
+
+        .content-pdf-list a:hover {
+            text-decoration: underline;
         }
 
         .tenders-section {
-            background: #ffffff;
+            background: linear-gradient(180deg, #f7fbfa 0%, #eef7f6 100%);
             padding: 40px 44px 70px;
         }
 
@@ -325,21 +639,27 @@
         }
 
         .tenders-inner h2 {
-            color: #557089;
+            color: var(--primary);
             text-align: center;
             font-size: 38px;
             margin-bottom: 34px;
         }
 
         .tender-summary {
-            color: #0065bd;
+            color: var(--primary);
             text-align: center;
             font-size: 20px;
             margin-bottom: 48px;
         }
 
+        #tendersPageBody {
+            max-width: 980px;
+            margin: -18px auto 34px;
+            text-align: center;
+        }
+
         .tender-summary a {
-            color: #0065bd;
+            color: var(--primary);
             text-decoration: none;
         }
 
@@ -349,29 +669,32 @@
 
         .tender-table-wrap {
             overflow-x: auto;
-            border: 1px solid #d9d9d9;
+            max-width: 100%;
+            -webkit-overflow-scrolling: touch;
+            border: 1px solid var(--line);
             background: #ffffff;
+            box-shadow: 0 12px 26px rgba(7, 93, 115, 0.1);
         }
 
         .tender-table {
             width: 100%;
             min-width: 980px;
             border-collapse: collapse;
-            color: #000000;
+            color: var(--ink);
             font-size: 20px;
         }
 
         .tender-table th,
         .tender-table td {
-            border-right: 1px solid #d9d9d9;
-            border-bottom: 1px solid #d9d9d9;
+            border-right: 1px solid var(--line);
+            border-bottom: 1px solid var(--line);
             padding: 16px 14px;
             text-align: left;
             vertical-align: top;
         }
 
         .tender-table th {
-            background: #ffffff;
+            background: var(--primary-soft);
             font-weight: 700;
             white-space: nowrap;
         }
@@ -382,7 +705,7 @@
         }
 
         .tender-open-link {
-            color: #0065bd;
+            color: var(--primary);
             font-weight: 700;
             text-decoration: none;
         }
@@ -395,11 +718,11 @@
         .contact-section {
             background: #ffffff;
             padding: 40px 40px 70px;
-            border-top: 4px solid #3b87c8;
+            border-top: 4px solid var(--primary);
         }
 
         .contact-section h2 {
-            color: #557089;
+            color: var(--primary);
             text-align: center;
             font-size: 30px;
             margin-bottom: 50px;
@@ -416,7 +739,9 @@
         .contact-card {
             min-height: 190px;
             background: #ffffff;
-            box-shadow: 0 16px 28px rgba(0,0,0,0.08);
+            box-shadow: 0 16px 28px rgba(7, 93, 115, 0.11);
+            border: 1px solid var(--line);
+            border-radius: 6px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -428,7 +753,7 @@
         .contact-icon {
             width: 52px;
             height: 52px;
-            border: 2px dotted #79b9ff;
+            border: 2px dotted var(--accent);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -439,19 +764,19 @@
         .contact-icon svg {
             width: 28px;
             height: 28px;
-            stroke: #3b8fd8;
+            stroke: var(--primary);
             stroke-width: 2.3;
             fill: none;
         }
 
         .contact-card h3 {
-            color: #606060;
+            color: var(--ink);
             font-size: 22px;
             margin-bottom: 12px;
         }
 
         .contact-card p {
-            color: #444;
+            color: var(--muted);
             font-size: 14px;
             line-height: 1.7;
         }
@@ -459,7 +784,7 @@
         .contact-page {
             display: none;
             background: #ffffff;
-            color: #000000;
+            color: var(--ink);
         }
 
         body.contact-open .contact-page {
@@ -467,8 +792,8 @@
         }
 
         .contact-page-header {
-            border-top: 3px solid #2f81bb;
-            background: #f3f8fc;
+            border-top: 3px solid var(--primary);
+            background: var(--primary-soft);
             min-height: 72px;
         }
 
@@ -480,28 +805,30 @@
             justify-content: space-between;
             align-items: flex-start;
             gap: 30px;
+            min-width: 0;
         }
 
         .contact-page-title {
             font-size: 22px;
             font-weight: 400;
-            color: #111111;
+            color: var(--ink);
         }
 
         .breadcrumb {
             list-style: none;
             display: flex;
+            flex-wrap: wrap;
             gap: 9px;
             align-items: center;
             font-size: 12px;
-            color: #000000;
+            color: var(--ink);
             padding-top: 4px;
         }
 
         .breadcrumb li::after {
             content: "/";
             margin-left: 9px;
-            color: #000000;
+            color: var(--muted);
         }
 
         .breadcrumb li:last-child::after {
@@ -510,7 +837,7 @@
         }
 
         .breadcrumb a {
-            color: #005da8;
+            color: var(--primary);
             text-decoration: none;
         }
 
@@ -541,12 +868,12 @@
 
         /* Footer */
         footer {
-            background-color: #073b63;
+            background: linear-gradient(135deg, var(--primary-dark), #075d73 65%, #0f7e8c);
             color: #ffffff;
             padding: 55px 40px 18px;
             font-size: 14px;
             position: relative;
-            border-top: 5px solid #b30000;
+            border-top: 5px solid var(--accent);
         }
 
         .footer-content {
@@ -555,6 +882,10 @@
             gap: 70px;
             max-width: 1480px;
             margin: 0 auto;
+        }
+
+        .footer-column {
+            min-width: 0;
         }
 
         .footer-column h3 {
@@ -566,7 +897,7 @@
         .footer-column h4 {
             font-size: 16px;
             margin-bottom: 20px;
-            color: #d7efff;
+            color: #d9f7f8;
         }
 
         .footer-column p {
@@ -588,13 +919,13 @@
         }
 
         .footer-column a:hover {
-            color: #ffd7d7;
+            color: #ffe2bd;
             text-decoration: underline;
         }
 
         .footer-column li::before {
             content: "\203A";
-            color: #8ed3ff;
+            color: #ffd196;
             font-size: 22px;
             margin-right: 9px;
             vertical-align: -1px;
@@ -610,8 +941,8 @@
             width: 36px;
             height: 36px;
             border-radius: 50%;
-            background: rgba(142,211,255,0.18);
-            border: 1px solid rgba(215,239,255,0.35);
+            background: rgba(255, 255, 255, 0.14);
+            border: 1px solid rgba(255, 255, 255, 0.32);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -619,23 +950,9 @@
         }
 
         .social-links a:hover {
-            background: #b30000;
+            background: var(--accent);
             color: #ffffff;
             text-decoration: none;
-        }
-
-        .webmail-badge {
-            display: inline-block;
-            background: #ffffff;
-            color: #333;
-            padding: 2px 6px;
-            font-size: 20px;
-            font-weight: 700;
-            line-height: 1;
-        }
-
-        .webmail-badge span {
-            color: #8b3a38;
         }
 
         .back-to-top {
@@ -644,7 +961,7 @@
             bottom: 0;
             width: 39px;
             height: 40px;
-            background: #b30000;
+            background: var(--accent);
             color: #ffffff;
             text-decoration: none;
             display: flex;
@@ -693,9 +1010,45 @@
             text-decoration: none;
         }
 
+        @media (max-width: 1100px) {
+            header {
+                align-items: flex-start;
+                flex-wrap: wrap;
+                padding: 15px 24px;
+            }
+
+            .header-logos-right {
+                width: 100%;
+                justify-content: center;
+                margin-left: 0;
+            }
+
+            .container {
+                align-items: stretch;
+                flex-direction: column;
+                padding: 20px 24px;
+            }
+
+            .sidebar {
+                min-width: 0;
+            }
+
+            .footer-content {
+                gap: 34px;
+            }
+        }
+
         @media (max-width: 900px) {
             .contact-page-header-inner {
                 flex-direction: column;
+            }
+
+            .content-detail {
+                grid-template-columns: 1fr;
+            }
+
+            .content-description {
+                min-height: 0;
             }
 
             .contact-cards,
@@ -704,15 +1057,259 @@
             }
 
         }
+
+        @media (max-width: 700px) {
+            .top-info-bar {
+                justify-content: center;
+                gap: 8px 14px;
+                padding: 8px 12px;
+                text-align: center;
+                font-size: 12px;
+            }
+
+            .top-info-bar span {
+                display: none;
+            }
+
+            header {
+                justify-content: center;
+                padding: 14px 16px;
+                text-align: center;
+            }
+
+            .site-logo {
+                width: 74px;
+                height: 74px;
+            }
+
+            .institute-title {
+                flex: 1 1 100%;
+                order: 2;
+            }
+
+            .institute-title h1 {
+                font-size: 20px;
+                line-height: 1.25;
+                overflow-wrap: anywhere;
+            }
+
+            .institute-title h2 {
+                font-size: 15px;
+                line-height: 1.35;
+            }
+
+            .institute-title h3 {
+                font-size: 14px;
+            }
+
+            .header-logos-right {
+                order: 3;
+                gap: 12px;
+            }
+
+            .header-logos-right img {
+                height: 48px;
+            }
+
+            nav {
+                display: flex;
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .mobile-menu-toggle {
+                display: flex;
+                align-self: flex-end;
+                margin-right: 8px;
+            }
+
+            nav ul {
+                display: none;
+                width: 100%;
+                padding-left: 0;
+            }
+
+            nav.nav-open ul {
+                display: flex;
+            }
+
+            nav ul li {
+                width: 100%;
+            }
+
+            nav ul li a {
+                padding: 12px 16px;
+                font-size: 14px;
+                border-top: 1px solid rgba(255, 255, 255, 0.12);
+            }
+
+            nav ul li.dropdown .dropdown-content,
+            nav ul li.dropdown .dropdown-content li.dropdown-submenu > .dropdown-content {
+                position: static;
+                min-width: 0;
+                width: 100%;
+                box-shadow: none;
+                background-color: rgba(4, 58, 74, 0.95);
+            }
+
+            nav.nav-open ul li.dropdown .dropdown-content,
+            nav.nav-open ul li.dropdown .dropdown-content li.dropdown-submenu > .dropdown-content {
+                display: block;
+            }
+
+            nav ul li.dropdown .dropdown-content li a {
+                padding-left: 28px;
+            }
+
+            nav ul li.dropdown .dropdown-content li.dropdown-submenu .dropdown-content li a {
+                padding-left: 40px;
+            }
+
+            .news-ticker {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 8px;
+                padding: 10px 14px;
+            }
+
+            .news-ticker span {
+                margin-right: 0;
+            }
+
+            .news-ticker marquee {
+                width: 100%;
+            }
+
+            .hero {
+                height: clamp(210px, 58vw, 340px);
+            }
+
+            .container,
+            .dynamic-content-page,
+            .tenders-section,
+            .contact-section {
+                padding-left: 14px;
+                padding-right: 14px;
+            }
+
+            .main-content,
+            .sidebar,
+            .dynamic-content-inner,
+            .contact-card {
+                padding: 18px;
+            }
+
+            .main-content h2,
+            .dynamic-content-inner h2,
+            .contact-section h2,
+            .tenders-inner h2 {
+                font-size: 24px;
+                line-height: 1.25;
+            }
+
+            .content-image-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tenders-section {
+                padding-top: 28px;
+                padding-bottom: 42px;
+            }
+
+            .tender-summary {
+                font-size: 16px;
+                line-height: 1.6;
+                margin-bottom: 28px;
+            }
+
+            .tender-table {
+                font-size: 14px;
+            }
+
+            .contact-section {
+                padding-top: 30px;
+                padding-bottom: 42px;
+            }
+
+            .contact-section h2 {
+                margin-bottom: 26px;
+            }
+
+            .contact-page-header-inner,
+            .contact-page-body {
+                padding-left: 14px;
+                padding-right: 14px;
+            }
+
+            footer {
+                padding: 36px 16px 22px;
+            }
+
+            .footer-column h3 {
+                font-size: 21px;
+            }
+
+            .back-to-top {
+                position: static;
+                margin: 24px auto 0;
+            }
+
+            .modal {
+                padding: 54px 14px 20px;
+            }
+
+            .close-modal {
+                right: 18px;
+                font-size: 34px;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .top-info-bar {
+                font-size: 11px;
+            }
+
+            .site-logo {
+                width: 66px;
+                height: 66px;
+            }
+
+            .header-logos-right img {
+                height: 40px;
+            }
+
+            .institute-title h1 {
+                font-size: 18px;
+            }
+
+            .container,
+            .dynamic-content-page,
+            .tenders-section,
+            .contact-section {
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+
+            .main-content,
+            .sidebar,
+            .dynamic-content-inner,
+            .contact-card {
+                padding: 14px;
+            }
+
+            .hero {
+                height: 190px;
+            }
+        }
     </style>
 </head>
 <body>
 
     <div class="top-info-bar">
-        <a href="mailto:ce@iriroorkee.res.in">Email: ce@iriroorkee.res.in</a>
+        <a href="mailto:ce@iriroorkee.res.in" id="topPrimaryEmail">Email: ce@iriroorkee.res.in</a>
         <span>|</span>
-        <a href="mailto:info@iriroorkee.res.in">info@iriroorkee.res.in</a>
-        <a href="tel:+911332265174">Phone: +91-1332-265174</a>
+        <a href="mailto:info@iriroorkee.res.in" id="topSecondaryEmail">info@iriroorkee.res.in</a>
+        <a href="tel:+911332265174" id="topPhone">Phone: +91-1332-265174</a>
         <a href="admin-login.html" class="employee-corner" id="employeeCorner">Employee Corner</a>
     </div>
 
@@ -732,86 +1329,91 @@
 
     <!-- Navigation Menu -->
     <nav>
-        <ul>
+        <button class="mobile-menu-toggle" type="button" id="mobileMenuToggle" aria-label="Open navigation menu" aria-controls="mainNavigation" aria-expanded="false">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <ul id="mainNavigation">
             <li><a href="#" id="homeLink">Home</a></li>
             <li class="dropdown">
-                <a href="#">About Us</a>
+                <a href="#content-about-us" data-menu-link="about-us">About Us</a>
                 <ul class="dropdown-content">
-                    <li><a href="#">About IRI Roorkee</a></li>
-                    <li><a href="#">About IDO Roorkee</a></li>
-                    <li><a href="#">Right to information IRI</a></li>
-                    <li><a href="#">Common facilities</a></li>
-                    <li><a href="#">Testimonials</a></li>
+                    <li><a href="#content-about-iri-roorkee" data-menu-link="about-iri-roorkee">About IRI Roorkee</a></li>
+                    <li><a href="#content-about-ido-roorkee" data-menu-link="about-ido-roorkee">About IDO Roorkee</a></li>
+                    <li><a href="#content-right-to-information-iri" data-menu-link="right-to-information-iri">Right to information IRI</a></li>
+                    <li><a href="#content-common-facilities" data-menu-link="common-facilities">Common facilities</a></li>
+                    <li><a href="#content-testimonials" data-menu-link="testimonials">Testimonials</a></li>
                 </ul>
             </li>
             <li class="dropdown">
-                <a href="#">Model Study</a>
+                <a href="#content-model-study" data-menu-link="model-study">Model Study</a>
                 <ul class="dropdown-content">
-                    <li><a href="#">Hydraulics Research Station (Bahadrabad)</a></li>
-                    <li><a href="#">An Introduction to Hydraulic Model Studies</a></li>
-                    <li><a href="#">Data Required for Different Studies</a></li>
-                    <li><a href="#">Hydraulics Laboratory</a></li>
-                    <li><a href="#">Experimental Shed</a></li>
-                    <li><a href="#">Model Trays</a></li>
-                    <li><a href="#">Meteorological Observatory</a></li>
-                    <li><a href="#">Current Meter Rating</a></li>
+                    <li><a href="#content-hydraulics-research-station" data-menu-link="hydraulics-research-station">Hydraulics Research Station (Bahadrabad)</a></li>
+                    <li><a href="#content-introduction-hydraulic-model-studies" data-menu-link="introduction-hydraulic-model-studies">An Introduction to Hydraulic Model Studies</a></li>
+                    <li><a href="#content-data-required-different-studies" data-menu-link="data-required-different-studies">Data Required for Different Studies</a></li>
+                    <li><a href="#content-hydraulics-laboratory" data-menu-link="hydraulics-laboratory">Hydraulics Laboratory</a></li>
+                    <li><a href="#content-experimental-shed" data-menu-link="experimental-shed">Experimental Shed</a></li>
+                    <li><a href="#content-model-trays" data-menu-link="model-trays">Model Trays</a></li>
+                    <li><a href="#content-meteorological-observatory" data-menu-link="meteorological-observatory">Meteorological Observatory</a></li>
+                    <li><a href="#content-current-meter-rating" data-menu-link="current-meter-rating">Current Meter Rating</a></li>
                 </ul>
             </li>
             <li class="dropdown">
-                <a href="#">Services</a>
+                <a href="#content-services" data-menu-link="services">Services</a>
                 <ul class="dropdown-content">
-                    <li><a href="#">Consultancy Areas</a></li>
-                    <li><a href="#">Concrete Cell</a></li>
-                    <li><a href="#">Test Facilities</a></li>
-                    <li><a href="#">Ground Water</a></li>
-                    <li><a href="#">Flood Related Studies</a></li>
-                    <li><a href="#">Important Studies</a></li>
+                    <li><a href="#content-consultancy-areas" data-menu-link="consultancy-areas">Consultancy Areas</a></li>
+                    <li><a href="#content-concrete-cell" data-menu-link="concrete-cell">Concrete Cell</a></li>
+                    <li><a href="#content-test-facilities" data-menu-link="test-facilities">Test Facilities</a></li>
+                    <li><a href="#content-ground-water" data-menu-link="ground-water">Ground Water</a></li>
+                    <li><a href="#content-flood-related-studies" data-menu-link="flood-related-studies">Flood Related Studies</a></li>
+                    <li><a href="#content-important-studies" data-menu-link="important-studies">Important Studies</a></li>
                 </ul>
             </li>
             <li class="dropdown">
-                <a href="#">NHP</a>
+                <a href="#content-nhp" data-menu-link="nhp">NHP</a>
                 <ul class="dropdown-content">
-                    <li><a href="#">About NHP Uttarakhand</a></li>
-                    <li><a href="#">Project Implementation</a></li>
+                    <li><a href="#content-about-nhp-uttarakhand" data-menu-link="about-nhp-uttarakhand">About NHP Uttarakhand</a></li>
+                    <li><a href="#content-project-implementation" data-menu-link="project-implementation">Project Implementation</a></li>
                     <li class="dropdown-submenu">
-                        <a href="#">Project Components</a>
+                        <a href="#content-project-components" data-menu-link="project-components">Project Components</a>
                         <ul class="dropdown-content">
-                            <li><a href="#">A-WRMS</a></li>
-                            <li><a href="#">B-WRIS</a></li>
-                            <li><a href="#">C-WROPS</a></li>
-                            <li><a href="#">D-ICE</a></li>
+                            <li><a href="#content-a-wrms" data-menu-link="a-wrms">A-WRMS</a></li>
+                            <li><a href="#content-b-wris" data-menu-link="b-wris">B-WRIS</a></li>
+                            <li><a href="#content-c-wrops" data-menu-link="c-wrops">C-WROPS</a></li>
+                            <li><a href="#content-d-ice" data-menu-link="d-ice">D-ICE</a></li>
                         </ul>
                     </li>
-                    <li><a href="#">Project Management Unit</a></li>
-                    <li><a href="#">Training</a></li>
+                    <li><a href="#content-project-management-unit" data-menu-link="project-management-unit">Project Management Unit</a></li>
+                    <li><a href="#content-training" data-menu-link="training">Training</a></li>
                 </ul>
             </li>
             <li><a href="#tenders" id="tendersLink">Tenders & Policies</a></li>
             <li class="dropdown">
-                <a href="#">Publications</a>
+                <a href="#content-publications" data-menu-link="publications">Publications</a>
                 <ul class="dropdown-content">
-                    <li><a href="#">Achievements</a></li>
-                    <li><a href="#">Annual Report</a></li>
-                    <li><a href="#">Award</a></li>
-                    <li><a href="#">Outstanding Contribution</a></li>
-                    <li><a href="#">Activity Profile</a></li>
-                    <li><a href="#">News Letter</a></li>
+                    <li><a href="#content-achievements" data-menu-link="achievements">Achievements</a></li>
+                    <li><a href="#content-annual-report" data-menu-link="annual-report">Annual Report</a></li>
+                    <li><a href="#content-award" data-menu-link="award">Award</a></li>
+                    <li><a href="#content-outstanding-contribution" data-menu-link="outstanding-contribution">Outstanding Contribution</a></li>
+                    <li><a href="#content-activity-profile" data-menu-link="activity-profile">Activity Profile</a></li>
+                    <li><a href="#content-news-letter" data-menu-link="news-letter">News Letter</a></li>
                 </ul>
             </li>
             <li class="dropdown">
-                <a href="#">Laboratories</a>
+                <a href="#content-laboratories" data-menu-link="laboratories">Laboratories</a>
                 <ul class="dropdown-content">
-                    <li><a href="#">Capacity Survey Laboratory</a></li>
-                    <li><a href="#">Cement & Concrete Laboratory</a></li>
-                    <li><a href="#">Chemical Laboratory</a></li>
-                    <li><a href="#">Computer Center</a></li>
-                    <li><a href="#">EHDA Laboratory</a></li>
-                    <li><a href="#">Highway Lab</a></li>
-                    <li><a href="#">Isotope Laboratory</a></li>
-                    <li><a href="#">Remote Sensing Laboratory</a></li>
-                    <li><a href="#">Rock Mechanics Laboratory</a></li>
-                    <li><a href="#">Soil Laboratory</a></li>
-                    <li><a href="#">Water Quality Laboratory</a></li>
+                    <li><a href="#content-capacity-survey-laboratory" data-menu-link="capacity-survey-laboratory">Capacity Survey Laboratory</a></li>
+                    <li><a href="#content-cement-concrete-laboratory" data-menu-link="cement-concrete-laboratory">Cement & Concrete Laboratory</a></li>
+                    <li><a href="#content-chemical-laboratory" data-menu-link="chemical-laboratory">Chemical Laboratory</a></li>
+                    <li><a href="#content-computer-center" data-menu-link="computer-center">Computer Center</a></li>
+                    <li><a href="#content-ehda-laboratory" data-menu-link="ehda-laboratory">EHDA Laboratory</a></li>
+                    <li><a href="#content-highway-lab" data-menu-link="highway-lab">Highway Lab</a></li>
+                    <li><a href="#content-isotope-laboratory" data-menu-link="isotope-laboratory">Isotope Laboratory</a></li>
+                    <li><a href="#content-remote-sensing-laboratory" data-menu-link="remote-sensing-laboratory">Remote Sensing Laboratory</a></li>
+                    <li><a href="#content-rock-mechanics-laboratory" data-menu-link="rock-mechanics-laboratory">Rock Mechanics Laboratory</a></li>
+                    <li><a href="#content-soil-laboratory" data-menu-link="soil-laboratory">Soil Laboratory</a></li>
+                    <li><a href="#content-water-quality-laboratory" data-menu-link="water-quality-laboratory">Water Quality Laboratory</a></li>
                 </ul>
             </li>
             <li><a href="#contact-us" id="contactUsLink">Contact Us</a></li>
@@ -840,9 +1442,11 @@
     <div class="container">
         <!-- Left Side: Welcome Text -->
         <div class="main-content">
-            <h2>Welcome to Irrigation Research Institute</h2>
-            <p>The Irrigation Research Institute (IRI), Roorkee was established to carry out research and development activities in the field of irrigation and water resources.</p>
-            <p>Our mandate includes conducting experimental and theoretical studies in hydraulics, hydrology, soil mechanics, and related disciplines to solve complex engineering problems.</p>
+            <h2 id="homeMainTitle">Welcome to Irrigation Research Institute</h2>
+            <div id="homeMainBody">
+                <p>The Irrigation Research Institute (IRI), Roorkee was established to carry out research and development activities in the field of irrigation and water resources.</p>
+                <p>Our mandate includes conducting experimental and theoretical studies in hydraulics, hydrology, soil mechanics, and related disciplines to solve complex engineering problems.</p>
+            </div>
         </div>
 
         <!-- Right Side: Notice Board -->
@@ -858,9 +1462,17 @@
         </div>
     </div>
 
+    <main class="dynamic-content-page" id="menuContentPage">
+        <div class="dynamic-content-inner">
+            <h2 id="menuContentTitle">Information</h2>
+            <div class="dynamic-content-body" id="menuContentBody">Details will be updated soon.</div>
+        </div>
+    </main>
+
     <section class="tenders-section" id="tenders">
         <div class="tenders-inner">
-            <h2>Tenders</h2>
+            <h2 id="tendersPageTitle">Tenders</h2>
+            <div class="dynamic-content-body" id="tendersPageBody"></div>
             <div class="tender-summary">
                 <a href="#">Active Bids (<span id="home-active-bids-count">0</span>)</a> |
                 <a href="#">Opening Today (<span id="home-opening-today-count">0</span>)</a> |
@@ -901,7 +1513,7 @@
                     </svg>
                 </div>
                 <h3>Our Address</h3>
-                <p>Irrigation Research Institute, Roorkee, Uttarakhand</p>
+                <p id="contactCardAddress">Irrigation Research Institute, Roorkee, Uttarakhand</p>
             </div>
             <div class="contact-card">
                 <div class="contact-icon" aria-hidden="true">
@@ -911,7 +1523,7 @@
                     </svg>
                 </div>
                 <h3>Email Us</h3>
-                <p>ce@iriroorkee.res.in<br>info@iriroorkee.res.in</p>
+                <p id="contactCardEmails">ce@iriroorkee.res.in<br>info@iriroorkee.res.in</p>
             </div>
             <div class="contact-card">
                 <div class="contact-icon" aria-hidden="true">
@@ -922,7 +1534,7 @@
                     </svg>
                 </div>
                 <h3>Call Us</h3>
-                <p>+91-1332-265174<br>+91-1332-265174</p>
+                <p id="contactCardPhones">+91-1332-265174<br>+91-1332-265174</p>
             </div>
         </div>
     </section>
@@ -941,17 +1553,17 @@
 
         <div class="contact-page-body">
             <div class="contact-details">
-                <p><strong>Chief Engineer (Design) &amp; Director</strong></p>
-                <p>Irrigation Research Institute, Roorkee</p>
-                <p>Phone no : +91 - 1332 - 265174</p>
-                <p>Email : ce@iriroorkee.res.in</p>
-                <p>Fax : +91 - 1332 - 262487</p>
+                <p><strong id="contactDirectorTitle">Chief Engineer (Design) &amp; Director</strong></p>
+                <p id="contactPageAddress">Irrigation Research Institute, Roorkee</p>
+                <p id="contactPagePhone">Phone no : +91 - 1332 - 265174</p>
+                <p id="contactPageEmail">Email : ce@iriroorkee.res.in</p>
+                <p id="contactPageFax">Fax : +91 - 1332 - 262487</p>
 
                 <div class="spacer"></div>
 
-                <p>For any Information/Query related to Hydraulic Model Study/Testing etc.</p>
+                <p id="contactPageQuery">For any Information/Query related to Hydraulic Model Study/Testing etc.</p>
                 <p>Please mail us at -</p>
-                <p>info@iriroorkee.res.in</p>
+                <p id="contactPageSecondaryEmail">info@iriroorkee.res.in</p>
             </div>
         </div>
     </main>
@@ -967,8 +1579,8 @@
         <div class="footer-content">
             <div class="footer-column">
                 <h3>Irrigation Research Institute</h3>
-                <p>Irrigation Research Institute<br>Roorkee, Uttarakhand</p>
-                <p><strong>Phone:</strong> 91-1332-265174<br><strong>Email:</strong> info@iriroorkee.res.in</p>
+                <p id="footerAddress">Irrigation Research Institute<br>Roorkee, Uttarakhand</p>
+                <p><strong>Phone:</strong> <span id="footerPhone">91-1332-265174</span><br><strong>Email:</strong> <span id="footerEmail">info@iriroorkee.res.in</span></p>
                 <div class="social-links" aria-label="Social links">
                     <a href="#" aria-label="Twitter">t</a>
                     <a href="#" aria-label="Facebook">f</a>
@@ -976,26 +1588,25 @@
                     <a href="#" aria-label="Skype">s</a>
                     <a href="#" aria-label="LinkedIn">in</a>
                 </div>
-                <div class="webmail-badge">web<span>Mail</span></div>
             </div>
             <div class="footer-column">
                 <h4>Useful Links</h4>
                 <ul>
-                    <li><a href="#">Home</a></li>
-                    <li><a href="#">About us</a></li>
-                    <li><a href="#">Common Facilities</a></li>
-                    <li><a href="#">Outstanding Contribution</a></li>
-                    <li><a href="#">Cement & Concrete Laboratory</a></li>
+                    <li><a href="#" data-home-link>Home</a></li>
+                    <li><a href="#content-about-us" data-menu-link="about-us">About us</a></li>
+                    <li><a href="#content-common-facilities" data-menu-link="common-facilities">Common Facilities</a></li>
+                    <li><a href="#content-outstanding-contribution" data-menu-link="outstanding-contribution">Outstanding Contribution</a></li>
+                    <li><a href="#content-cement-concrete-laboratory" data-menu-link="cement-concrete-laboratory">Cement & Concrete Laboratory</a></li>
                 </ul>
             </div>
             <div class="footer-column">
                 <h4>Our Services</h4>
                 <ul>
-                    <li><a href="#">Highway Laboratory</a></li>
-                    <li><a href="#">Consultancy Areas</a></li>
-                    <li><a href="#">Flood Related Studies</a></li>
-                    <li><a href="#">An Introduction to Hydraulic Model Studies</a></li>
-                    <li><a href="#">About NHP Uttarakhand</a></li>
+                    <li><a href="#content-highway-lab" data-menu-link="highway-lab">Highway Laboratory</a></li>
+                    <li><a href="#content-consultancy-areas" data-menu-link="consultancy-areas">Consultancy Areas</a></li>
+                    <li><a href="#content-flood-related-studies" data-menu-link="flood-related-studies">Flood Related Studies</a></li>
+                    <li><a href="#content-introduction-hydraulic-model-studies" data-menu-link="introduction-hydraulic-model-studies">An Introduction to Hydraulic Model Studies</a></li>
+                    <li><a href="#content-about-nhp-uttarakhand" data-menu-link="about-nhp-uttarakhand">About NHP Uttarakhand</a></li>
                 </ul>
             </div>
         </div>
@@ -1007,28 +1618,159 @@
         const homeLink = document.getElementById('homeLink');
         const contactUsLink = document.getElementById('contactUsLink');
         const tendersLink = document.getElementById('tendersLink');
+        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+        const mainNavigation = document.getElementById('mainNavigation');
         const breadcrumbHome = document.getElementById('breadcrumbHome');
+        const menuContentTitle = document.getElementById('menuContentTitle');
+        const menuContentBody = document.getElementById('menuContentBody');
+        const menuLinks = document.querySelectorAll('[data-menu-link]');
+        const homeShortcutLinks = document.querySelectorAll('[data-home-link]');
+        window.menuContentData = window.menuContentData || {};
+
+        function closeMobileMenu() {
+            const nav = mobileMenuToggle ? mobileMenuToggle.closest('nav') : null;
+            if (!nav) return;
+            nav.classList.remove('nav-open');
+            mobileMenuToggle.setAttribute('aria-expanded', 'false');
+            mobileMenuToggle.setAttribute('aria-label', 'Open navigation menu');
+        }
+
+        if (mobileMenuToggle) {
+            mobileMenuToggle.addEventListener('click', function () {
+                const nav = this.closest('nav');
+                const isOpen = nav.classList.toggle('nav-open');
+                this.setAttribute('aria-expanded', String(isOpen));
+                this.setAttribute('aria-label', isOpen ? 'Close navigation menu' : 'Open navigation menu');
+            });
+        }
+
+        if (mainNavigation) {
+            mainNavigation.addEventListener('click', function (event) {
+                if (event.target.closest('a')) {
+                    closeMobileMenu();
+                }
+            });
+        }
+
+        function escapeContentHtml(value) {
+            return String(value || '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function renderMenuAssetsHtml(item = {}) {
+            const images = Array.isArray(item.images) ? item.images : [];
+            const pdfs = Array.isArray(item.pdfs) ? item.pdfs : [];
+            if (images.length === 0 && pdfs.length === 0) return '';
+
+            const imagesHtml = images.length ? `
+                <section>
+                    <h3>Images</h3>
+                    <div class="content-image-slider" data-image-slider>
+                        ${images.map((image, index) => `<img class="${index === 0 ? 'active' : ''}" src="${escapeContentHtml(image.url)}" alt="${escapeContentHtml(image.name || '')}">`).join('')}
+                    </div>
+                    ${images.length > 1 ? `<div class="content-slider-dots">${images.map((_, index) => `<span class="${index === 0 ? 'active' : ''}"></span>`).join('')}</div>` : ''}
+                </section>` : '';
+
+            const pdfsHtml = pdfs.length ? `
+                <section>
+                    <h3>PDF Files</h3>
+                    <ul class="content-pdf-list">
+                        ${pdfs.map(pdf => `<li><a href="${escapeContentHtml(pdf.url)}" target="_blank" rel="noopener">${escapeContentHtml(pdf.name || 'Open PDF')}</a></li>`).join('')}
+                    </ul>
+                </section>` : '';
+
+            return `<div class="content-assets">${imagesHtml}${pdfsHtml}</div>`;
+        }
+
+        function clearContentImageSliders() {
+            if (window.contentImageSliderTimers) {
+                window.contentImageSliderTimers.forEach(timerId => clearInterval(timerId));
+            }
+            window.contentImageSliderTimers = [];
+        }
+
+        function setupContentImageSliders(root = document) {
+            clearContentImageSliders();
+
+            root.querySelectorAll('[data-image-slider]').forEach(slider => {
+                const slides = Array.from(slider.querySelectorAll('img'));
+                const dots = Array.from(slider.parentElement.querySelectorAll('.content-slider-dots span'));
+                if (slides.length < 2) return;
+
+                let activeIndex = 0;
+                const showSlide = (nextIndex) => {
+                    slides[activeIndex].classList.remove('active');
+                    if (dots[activeIndex]) dots[activeIndex].classList.remove('active');
+                    activeIndex = nextIndex % slides.length;
+                    slides[activeIndex].classList.add('active');
+                    if (dots[activeIndex]) dots[activeIndex].classList.add('active');
+                };
+
+                window.contentImageSliderTimers.push(setInterval(() => {
+                    showSlide(activeIndex + 1);
+                }, 3000));
+            });
+        }
+
+        function renderMenuDetailHtml(item = {}, content = '') {
+            const assetsHtml = renderMenuAssetsHtml(item);
+            const descriptionHtml = richTextToParagraphs(content) || '<p>Details will be updated soon.</p>';
+            const layoutClass = assetsHtml ? 'content-detail' : 'content-detail no-assets';
+
+            return `
+                <div class="${layoutClass}">
+                    ${assetsHtml}
+                    <section class="content-description">
+                        <h3>Description</h3>
+                        ${descriptionHtml}
+                    </section>
+                </div>`;
+        }
 
         function showContactPage() {
+            clearContentImageSliders();
             document.body.classList.add('contact-open');
             document.body.classList.remove('tenders-open');
+            document.body.classList.remove('content-open');
             window.location.hash = 'contact-us';
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function showHomePage() {
+            clearContentImageSliders();
             document.body.classList.remove('contact-open');
             document.body.classList.remove('tenders-open');
-            if (window.location.hash === '#contact-us' || window.location.hash === '#tenders') {
+            document.body.classList.remove('content-open');
+            if (window.location.hash === '#contact-us' || window.location.hash === '#tenders' || window.location.hash.startsWith('#content-')) {
                 history.pushState('', document.title, window.location.pathname + window.location.search);
             }
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function showTendersPage() {
+            clearContentImageSliders();
             document.body.classList.remove('contact-open');
+            document.body.classList.remove('content-open');
             document.body.classList.add('tenders-open');
             window.location.hash = 'tenders';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function showContentPage(key, fallbackLabel) {
+            const saved = window.menuContentData[key] || {};
+            const title = saved.label || fallbackLabel || 'Information';
+            const content = saved.content || 'Details will be updated soon.';
+            menuContentTitle.textContent = title;
+            menuContentBody.innerHTML = renderMenuDetailHtml(saved, content);
+            setupContentImageSliders(menuContentBody);
+            document.body.classList.remove('contact-open');
+            document.body.classList.remove('tenders-open');
+            document.body.classList.add('content-open');
+            window.location.hash = `content-${key}`;
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -1047,9 +1789,23 @@
             showHomePage();
         });
 
+        homeShortcutLinks.forEach((link) => {
+            link.addEventListener('click', function (event) {
+                event.preventDefault();
+                showHomePage();
+            });
+        });
+
         tendersLink.addEventListener('click', function (event) {
             event.preventDefault();
             showTendersPage();
+        });
+
+        menuLinks.forEach((link) => {
+            link.addEventListener('click', function (event) {
+                event.preventDefault();
+                showContentPage(this.dataset.menuLink, this.textContent.trim());
+            });
         });
 
         breadcrumbHome.addEventListener('click', function (event) {
@@ -1061,6 +1817,10 @@
             document.body.classList.add('contact-open');
         } else if (window.location.hash === '#tenders') {
             document.body.classList.add('tenders-open');
+        } else if (window.location.hash.startsWith('#content-')) {
+            const key = window.location.hash.replace('#content-', '');
+            const link = document.querySelector(`[data-menu-link="${key}"]`);
+            showContentPage(key, link ? link.textContent.trim() : 'Information');
         }
 
         // Logo Modal Logic
@@ -1165,7 +1925,7 @@
                         <td>${escapeHtml(formatDate(tender.startDate))}</td>
                         <td>${escapeHtml(formatDate(tender.endDate))}</td>
                         <td>${escapeHtml(tender.refNo || tender.title || '')}</td>
-                        <td>${escapeHtml(tender.description)}</td>
+                        <td>${richTextInline(tender.description)}</td>
                         <td>${escapeHtml(tender.officeDetail || '')}</td>
                         <td>${openCell}</td>
                     </tr>`;
@@ -1173,13 +1933,138 @@
             updateTenderCounts(tenders);
         }
 
+        function textToParagraphs(content) {
+            const lines = String(content || '')
+                .split(/\n+/)
+                .map(line => line.trim())
+                .filter(Boolean);
+            return lines.length ? lines.map(line => `<p>${escapeHtml(line)}</p>`).join('') : '';
+        }
+
+        function allowRichTextTags(escapedText) {
+            return escapedText
+                .replace(/&lt;strong&gt;/g, '<strong>')
+                .replace(/&lt;\/strong&gt;/g, '</strong>')
+                .replace(/&lt;span class=&quot;rich-text-large&quot;&gt;/g, '<span class="rich-text-large">')
+                .replace(/&lt;span class=&quot;rich-text-small&quot;&gt;/g, '<span class="rich-text-small">')
+                .replace(/&lt;span lang=&quot;(en|hi|ur)&quot;&gt;/g, '<span lang="$1">')
+                .replace(/&lt;\/span&gt;/g, '</span>');
+        }
+
+        function richTextToParagraphs(content) {
+            const lines = String(content || '')
+                .split(/\n+/)
+                .map(line => line.trim())
+                .filter(Boolean);
+            return lines.length ? lines.map(line => `<p>${allowRichTextTags(escapeHtml(line))}</p>`).join('') : '';
+        }
+
+        function richTextInline(content) {
+            return allowRichTextTags(escapeHtml(content));
+        }
+
+        function setElementText(id, value) {
+            const element = document.getElementById(id);
+            if (element) element.textContent = value;
+        }
+
+        function applyContactDetails(contactDetails) {
+            if (!contactDetails) return;
+
+            const primaryEmail = contactDetails.primaryEmail || 'ce@iriroorkee.res.in';
+            const secondaryEmail = contactDetails.secondaryEmail || 'info@iriroorkee.res.in';
+            const phoneDisplay = contactDetails.phoneDisplay || '+91-1332-265174';
+            const phoneLink = contactDetails.phoneLink || '+911332265174';
+            const address = contactDetails.address || 'Irrigation Research Institute, Roorkee, Uttarakhand';
+            const fax = contactDetails.fax || '+91 - 1332 - 262487';
+            const contactTitle = contactDetails.contactTitle || 'An ISO 9001: 2008 Certified Organization';
+            const directorTitle = contactDetails.directorTitle || 'Chief Engineer (Design) & Director';
+            const queryText = contactDetails.queryText || 'For any Information/Query related to Hydraulic Model Study/Testing etc.';
+
+            const topPrimaryEmail = document.getElementById('topPrimaryEmail');
+            if (topPrimaryEmail) {
+                topPrimaryEmail.href = `mailto:${primaryEmail}`;
+                topPrimaryEmail.textContent = `Email: ${primaryEmail}`;
+            }
+
+            const topSecondaryEmail = document.getElementById('topSecondaryEmail');
+            if (topSecondaryEmail) {
+                topSecondaryEmail.href = `mailto:${secondaryEmail}`;
+                topSecondaryEmail.textContent = secondaryEmail;
+            }
+
+            const topPhone = document.getElementById('topPhone');
+            if (topPhone) {
+                topPhone.href = `tel:${phoneLink}`;
+                topPhone.textContent = `Phone: ${phoneDisplay}`;
+            }
+
+            setElementText('contactCardAddress', address);
+            const contactCardEmails = document.getElementById('contactCardEmails');
+            if (contactCardEmails) contactCardEmails.innerHTML = `${escapeHtml(primaryEmail)}<br>${escapeHtml(secondaryEmail)}`;
+            const contactCardPhones = document.getElementById('contactCardPhones');
+            if (contactCardPhones) contactCardPhones.innerHTML = `${escapeHtml(phoneDisplay)}<br>${escapeHtml(phoneDisplay)}`;
+
+            const contactTitleElement = document.querySelector('.contact-page-title');
+            if (contactTitleElement) contactTitleElement.textContent = contactTitle;
+            const contactDetailsElement = document.querySelector('.contact-details');
+            if (contactDetailsElement) {
+                contactDetailsElement.innerHTML = `
+                    <p><strong>${escapeHtml(directorTitle)}</strong></p>
+                    <p>${escapeHtml(address)}</p>
+                    <p>Phone no : ${escapeHtml(phoneDisplay)}</p>
+                    <p>Email : ${escapeHtml(primaryEmail)}</p>
+                    <p>Fax : ${escapeHtml(fax)}</p>
+
+                    <div class="spacer"></div>
+
+                    <p>${richTextInline(queryText)}</p>
+                    <p>Please mail us at -</p>
+                    <p>${escapeHtml(secondaryEmail)}</p>`;
+            }
+
+            setElementText('footerPhone', phoneDisplay);
+            setElementText('footerEmail', secondaryEmail);
+            const footerAddress = document.getElementById('footerAddress');
+            if (footerAddress) footerAddress.innerHTML = escapeHtml(address).replace(/,\s*/g, '<br>');
+        }
+
+        function applySpecialMenuContent(menuContent) {
+            const homeContent = menuContent && menuContent.home;
+            if (homeContent && homeContent.content) {
+                const homeTitle = document.getElementById('homeMainTitle');
+                const homeBody = document.getElementById('homeMainBody');
+                if (homeTitle) homeTitle.textContent = homeContent.label || 'Home';
+                if (homeBody) homeBody.innerHTML = `${richTextToParagraphs(homeContent.content)}${renderMenuAssetsHtml(homeContent)}`;
+            }
+
+            const tenderContent = menuContent && menuContent['tenders-policies'];
+            if (tenderContent) {
+                const tendersTitle = document.getElementById('tendersPageTitle');
+                const tendersBody = document.getElementById('tendersPageBody');
+                if (tendersTitle) tendersTitle.textContent = tenderContent.label || 'Tenders & Policies';
+                if (tendersBody) tendersBody.innerHTML = `${richTextToParagraphs(tenderContent.content || '')}${renderMenuAssetsHtml(tenderContent)}`;
+            }
+
+            const contactContent = menuContent && menuContent['contact-us'];
+            if (contactContent && contactContent.content) {
+                const contactTitle = document.querySelector('.contact-page-title');
+                const contactDetails = document.querySelector('.contact-details');
+                if (contactTitle) contactTitle.textContent = contactContent.label || 'Contact Us';
+                if (contactDetails) contactDetails.innerHTML = `${richTextToParagraphs(contactContent.content)}${renderMenuAssetsHtml(contactContent)}`;
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', async () => {
             try {
-                const response = await fetch('/api/public-data');
+                const response = await fetch('/api/public-data', { cache: 'no-store' });
                 if (!response.ok) {
                     throw new Error('Could not fetch public data');
                 }
                 const data = await response.json();
+                window.menuContentData = data.menuContent || {};
+                applySpecialMenuContent(window.menuContentData);
+                applyContactDetails(data.contactDetails);
 
                 // Update Marquee
                 const marquee = document.querySelector('.news-ticker marquee');
@@ -1202,6 +2087,12 @@
                     } else {
                         announcementsList.innerHTML = '<li>No recent announcements.</li>';
                     }
+                }
+
+                if (window.location.hash.startsWith('#content-')) {
+                    const key = window.location.hash.replace('#content-', '');
+                    const link = document.querySelector(`[data-menu-link="${key}"]`);
+                    showContentPage(key, link ? link.textContent.trim() : 'Information');
                 }
 
                 renderTenders(data.tenders);

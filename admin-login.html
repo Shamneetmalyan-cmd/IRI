@@ -12,6 +12,10 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
+        html {
+            overflow-x: hidden;
+        }
+
         body {
             min-height: 100vh;
             background: #f4f7fb;
@@ -19,6 +23,7 @@
             align-items: center;
             justify-content: center;
             padding: 24px;
+            overflow-x: hidden;
         }
 
         .login-panel {
@@ -101,6 +106,37 @@
 
         .back-link:hover {
             text-decoration: underline;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                align-items: flex-start;
+                padding: 16px;
+            }
+
+            .login-panel {
+                padding: 24px 18px;
+                box-shadow: 0 12px 28px rgba(0,0,0,0.1);
+            }
+
+            .login-logo {
+                width: 72px;
+                height: 72px;
+                margin-bottom: 14px;
+            }
+
+            h1 {
+                font-size: 23px;
+            }
+
+            .subtitle {
+                margin-bottom: 22px;
+            }
+
+            input,
+            button {
+                font-size: 15px;
+            }
         }
     </style>
 </head>

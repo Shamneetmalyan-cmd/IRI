@@ -21,12 +21,17 @@
             box-sizing: border-box;
         }
 
+        html {
+            overflow-x: hidden;
+        }
+
         body {
             margin: 0;
             min-height: 100vh;
             background: var(--page);
             color: var(--ink);
             font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
         }
 
         .app-shell {
@@ -53,6 +58,7 @@
             padding: 8px 8px 24px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.16);
             margin-bottom: 18px;
+            min-width: 0;
         }
 
         .brand img {
@@ -67,6 +73,7 @@
             display: block;
             font-size: 16px;
             line-height: 1.2;
+            overflow-wrap: anywhere;
         }
 
         .brand span {
@@ -226,6 +233,7 @@
         }
 
         input,
+        select,
         textarea {
             width: 100%;
             border: 1px solid #c8d4df;
@@ -243,6 +251,7 @@
         }
 
         input:focus,
+        select:focus,
         textarea:focus {
             border-color: var(--blue);
             box-shadow: 0 0 0 3px rgba(7, 90, 154, 0.12);
@@ -313,6 +322,44 @@
             font-weight: 700;
         }
 
+        .asset-list {
+            display: grid;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .asset-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            background: #fbfdff;
+            padding: 10px;
+            font-size: 14px;
+        }
+
+        .asset-item img {
+            width: 64px;
+            height: 48px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid var(--line);
+        }
+
+        .asset-meta {
+            min-width: 0;
+            flex: 1;
+        }
+
+        .asset-meta span {
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
         .tender-panel {
             margin-top: 18px;
         }
@@ -342,6 +389,8 @@
 
         .table-wrap {
             overflow-x: auto;
+            max-width: 100%;
+            -webkit-overflow-scrolling: touch;
             border: 1px solid #d9d9d9;
             background: #ffffff;
         }
@@ -402,6 +451,7 @@
             .sidebar {
                 position: static;
                 height: auto;
+                padding: 18px;
             }
 
             .nav {
@@ -424,7 +474,7 @@
 
         @media (max-width: 560px) {
             .main {
-                padding: 18px;
+                padding: 14px;
             }
 
             .topbar {
@@ -432,8 +482,44 @@
                 flex-direction: column;
             }
 
+            .topbar h1 {
+                font-size: 24px;
+                line-height: 1.2;
+            }
+
             .nav {
                 grid-template-columns: 1fr;
+            }
+
+            .card {
+                padding: 16px;
+            }
+
+            .primary-button {
+                width: 100%;
+            }
+
+            .asset-item,
+            .list-item-header {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .delete-button {
+                margin-left: 0;
+            }
+
+            .tender-heading {
+                font-size: 26px;
+            }
+
+            .tender-links {
+                font-size: 14px;
+                line-height: 1.7;
+            }
+
+            .tender-table {
+                font-size: 14px;
             }
         }
     </style>
@@ -454,6 +540,7 @@
                     <li><button type="button" data-page="dashboard">Dashboard</button></li>
                     <li><button type="button" data-page="latest-updates">Latest Updates</button></li>
                     <li><button type="button" data-page="announcements">Announcements</button></li>
+                    <li><button type="button" data-page="menu-content">Menu Content</button></li>
                     <li><button type="button" data-page="tenders">Tenders</button></li>
                     <li><button type="button" data-page="settings">Settings</button></li>
                 </ul>
@@ -484,6 +571,10 @@
                     <article class="card stat">
                         <div class="label">Announcements</div>
                         <div id="announcements-count" class="value">0</div>
+                    </article>
+                    <article class="card stat">
+                        <div class="label">Menu Pages</div>
+                        <div id="menu-content-count" class="value">0</div>
                     </article>
                     <article class="card stat">
                         <div class="label">Active Tenders</div>
@@ -525,6 +616,44 @@
                     <section class="card">
                         <h2>Current Announcements</h2>
                         <div id="announcements-list" class="list"></div>
+                    </section>
+                </div>
+            </section>
+
+            <section id="menu-content" class="page">
+                <div class="grid two-column">
+                    <section class="card">
+                        <h2>Edit Menu Details</h2>
+                        <form id="menu-content-form" class="form-grid">
+                            <div>
+                                <label for="menu-content-key">Menu / Submenu</label>
+                                <select id="menu-content-key" name="key" required></select>
+                            </div>
+                            <div>
+                                <label for="menu-content-title">Page Title</label>
+                                <input type="text" id="menu-content-title" name="label" required>
+                            </div>
+                            <div>
+                                <label for="menu-content-details">Details</label>
+                                <textarea id="menu-content-details" name="content" required></textarea>
+                            </div>
+                            <div>
+                                <label for="menu-content-images">Images</label>
+                                <input type="file" id="menu-content-images" accept="image/*" multiple>
+                                <div id="menu-images-list" class="asset-list"></div>
+                            </div>
+                            <div>
+                                <label for="menu-content-pdfs">PDF Files</label>
+                                <input type="file" id="menu-content-pdfs" accept="application/pdf,.pdf" multiple>
+                                <div id="menu-pdfs-list" class="asset-list"></div>
+                            </div>
+                            <button class="primary-button" type="submit">Save Details</button>
+                            <div class="message" id="menu-content-message"></div>
+                        </form>
+                    </section>
+                    <section class="card">
+                        <h2>Saved Menu Pages</h2>
+                        <div id="menu-content-list" class="list"></div>
                     </section>
                 </div>
             </section>
@@ -627,13 +756,77 @@
             const state = {
                 updates: '',
                 announcements: [],
-                tenders: []
+                tenders: [],
+                menuContent: {}
             };
+
+            let menuAssets = {
+                images: [],
+                pdfs: []
+            };
+
+            const menuItems = [
+                { key: 'home', label: 'Home' },
+                { key: 'about-us', label: 'About Us' },
+                { key: 'about-iri-roorkee', label: 'About Us > About IRI Roorkee' },
+                { key: 'about-ido-roorkee', label: 'About Us > About IDO Roorkee' },
+                { key: 'right-to-information-iri', label: 'About Us > Right to information IRI' },
+                { key: 'common-facilities', label: 'About Us > Common facilities' },
+                { key: 'testimonials', label: 'About Us > Testimonials' },
+                { key: 'model-study', label: 'Model Study' },
+                { key: 'hydraulics-research-station', label: 'Model Study > Hydraulics Research Station (Bahadrabad)' },
+                { key: 'introduction-hydraulic-model-studies', label: 'Model Study > An Introduction to Hydraulic Model Studies' },
+                { key: 'data-required-different-studies', label: 'Model Study > Data Required for Different Studies' },
+                { key: 'hydraulics-laboratory', label: 'Model Study > Hydraulics Laboratory' },
+                { key: 'experimental-shed', label: 'Model Study > Experimental Shed' },
+                { key: 'model-trays', label: 'Model Study > Model Trays' },
+                { key: 'meteorological-observatory', label: 'Model Study > Meteorological Observatory' },
+                { key: 'current-meter-rating', label: 'Model Study > Current Meter Rating' },
+                { key: 'services', label: 'Services' },
+                { key: 'consultancy-areas', label: 'Services > Consultancy Areas' },
+                { key: 'concrete-cell', label: 'Services > Concrete Cell' },
+                { key: 'test-facilities', label: 'Services > Test Facilities' },
+                { key: 'ground-water', label: 'Services > Ground Water' },
+                { key: 'flood-related-studies', label: 'Services > Flood Related Studies' },
+                { key: 'important-studies', label: 'Services > Important Studies' },
+                { key: 'nhp', label: 'NHP' },
+                { key: 'about-nhp-uttarakhand', label: 'NHP > About NHP Uttarakhand' },
+                { key: 'project-implementation', label: 'NHP > Project Implementation' },
+                { key: 'project-components', label: 'NHP > Project Components' },
+                { key: 'a-wrms', label: 'NHP > Project Components > A-WRMS' },
+                { key: 'b-wris', label: 'NHP > Project Components > B-WRIS' },
+                { key: 'c-wrops', label: 'NHP > Project Components > C-WROPS' },
+                { key: 'd-ice', label: 'NHP > Project Components > D-ICE' },
+                { key: 'project-management-unit', label: 'NHP > Project Management Unit' },
+                { key: 'training', label: 'NHP > Training' },
+                { key: 'tenders-policies', label: 'Tenders & Policies' },
+                { key: 'publications', label: 'Publications' },
+                { key: 'achievements', label: 'Publications > Achievements' },
+                { key: 'annual-report', label: 'Publications > Annual Report' },
+                { key: 'award', label: 'Publications > Award' },
+                { key: 'outstanding-contribution', label: 'Publications > Outstanding Contribution' },
+                { key: 'activity-profile', label: 'Publications > Activity Profile' },
+                { key: 'news-letter', label: 'Publications > News Letter' },
+                { key: 'laboratories', label: 'Laboratories' },
+                { key: 'capacity-survey-laboratory', label: 'Laboratories > Capacity Survey Laboratory' },
+                { key: 'cement-concrete-laboratory', label: 'Laboratories > Cement & Concrete Laboratory' },
+                { key: 'chemical-laboratory', label: 'Laboratories > Chemical Laboratory' },
+                { key: 'computer-center', label: 'Laboratories > Computer Center' },
+                { key: 'ehda-laboratory', label: 'Laboratories > EHDA Laboratory' },
+                { key: 'highway-lab', label: 'Laboratories > Highway Lab' },
+                { key: 'isotope-laboratory', label: 'Laboratories > Isotope Laboratory' },
+                { key: 'remote-sensing-laboratory', label: 'Laboratories > Remote Sensing Laboratory' },
+                { key: 'rock-mechanics-laboratory', label: 'Laboratories > Rock Mechanics Laboratory' },
+                { key: 'soil-laboratory', label: 'Laboratories > Soil Laboratory' },
+                { key: 'water-quality-laboratory', label: 'Laboratories > Water Quality Laboratory' },
+                { key: 'contact-us', label: 'Contact Us' }
+            ];
 
             const pageInfo = {
                 dashboard: { title: 'Dashboard', subtitle: 'Review website activity and manage public content.' },
                 'latest-updates': { title: 'Latest Updates', subtitle: 'Edit the update text shown on the public website.' },
                 announcements: { title: 'Announcements', subtitle: 'Create and review public announcements.' },
+                'menu-content': { title: 'Menu Content', subtitle: 'Fill details for website menu and submenu pages.' },
                 tenders: { title: 'Tenders', subtitle: 'Publish and review tender information.' },
                 settings: { title: 'Settings', subtitle: 'Manage admin account access.' }
             };
@@ -689,6 +882,109 @@
                     </div>`).join('');
             };
 
+            const populateMenuOptions = () => {
+                const select = document.getElementById('menu-content-key');
+                select.innerHTML = menuItems.map(item => `<option value="${item.key}">${escapeHtml(item.label)}</option>`).join('');
+            };
+
+            const loadSelectedMenuContent = () => {
+                const key = document.getElementById('menu-content-key').value;
+                const fallback = menuItems.find(item => item.key === key);
+                const saved = state.menuContent[key] || {};
+                document.getElementById('menu-content-title').value = saved.label || (fallback ? fallback.label.split(' > ').pop() : '');
+                document.getElementById('menu-content-details').value = saved.content || '';
+                menuAssets = {
+                    images: Array.isArray(saved.images) ? [...saved.images] : [],
+                    pdfs: Array.isArray(saved.pdfs) ? [...saved.pdfs] : []
+                };
+                document.getElementById('menu-content-images').value = '';
+                document.getElementById('menu-content-pdfs').value = '';
+                renderMenuAssets();
+                document.getElementById('menu-content-message').textContent = '';
+            };
+
+            const formatBytes = (bytes = 0) => {
+                if (!bytes) return '';
+                if (bytes < 1024) return `${bytes} B`;
+                if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
+                return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+            };
+
+            const renderMenuAssets = () => {
+                const imagesList = document.getElementById('menu-images-list');
+                const pdfsList = document.getElementById('menu-pdfs-list');
+
+                imagesList.innerHTML = menuAssets.images.length
+                    ? menuAssets.images.map((asset, index) => `
+                        <div class="asset-item">
+                            <img src="${escapeHtml(asset.url)}" alt="">
+                            <div class="asset-meta">
+                                <span>${escapeHtml(asset.name)}</span>
+                                <small>${escapeHtml(formatBytes(asset.size))}</small>
+                            </div>
+                            <button class="delete-button" type="button" data-asset-type="images" data-asset-index="${index}">REMOVE</button>
+                        </div>`).join('')
+                    : '<div class="list-item"><p>No images added.</p></div>';
+
+                pdfsList.innerHTML = menuAssets.pdfs.length
+                    ? menuAssets.pdfs.map((asset, index) => `
+                        <div class="asset-item">
+                            <div class="asset-meta">
+                                <span>${escapeHtml(asset.name)}</span>
+                                <small>${escapeHtml(formatBytes(asset.size))}</small>
+                            </div>
+                            <a class="open-link" href="${escapeHtml(asset.url)}" target="_blank" rel="noopener">Open</a>
+                            <button class="delete-button" type="button" data-asset-type="pdfs" data-asset-index="${index}">REMOVE</button>
+                        </div>`).join('')
+                    : '<div class="list-item"><p>No PDF files added.</p></div>';
+            };
+
+            const fileToDataUrl = (file) => new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+
+            const uploadFiles = async (files) => {
+                const uploaded = [];
+                for (const file of files) {
+                    const dataUrl = await fileToDataUrl(file);
+                    const response = await fetch('/api/uploads', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name: file.name, type: file.type, dataUrl })
+                    });
+                    const result = await response.json();
+                    if (!response.ok) {
+                        throw new Error(result.message || `Failed to upload ${file.name}`);
+                    }
+                    uploaded.push(result);
+                }
+                return uploaded;
+            };
+
+            const renderMenuContent = () => {
+                const list = document.getElementById('menu-content-list');
+                const savedKeys = Object.keys(state.menuContent);
+                if (savedKeys.length === 0) {
+                    list.innerHTML = '<div class="list-item"><p>No menu details saved yet.</p></div>';
+                    return;
+                }
+
+                list.innerHTML = menuItems
+                    .filter(item => state.menuContent[item.key])
+                    .map(item => {
+                        const saved = state.menuContent[item.key];
+                        return `
+                            <div class="list-item">
+                                <strong>${escapeHtml(saved.label || item.label)}</strong>
+                                <p>${escapeHtml(saved.content).slice(0, 180)}${saved.content.length > 180 ? '...' : ''}</p>
+                                <p>${(saved.images || []).length} image(s), ${(saved.pdfs || []).length} PDF(s)</p>
+                            </div>`;
+                    }).join('');
+            };
+
             const updateTenderCounts = () => {
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
@@ -741,6 +1037,7 @@
 
             const updateStats = () => {
                 document.getElementById('announcements-count').textContent = state.announcements.length;
+                document.getElementById('menu-content-count').textContent = Object.keys(state.menuContent || {}).length;
                 document.getElementById('tenders-count').textContent = state.tenders.length;
                 document.getElementById('update-content').value = state.updates;
             };
@@ -776,6 +1073,53 @@
                 document.querySelectorAll('.nav button').forEach(b => b.addEventListener('click', () => showPage(b.dataset.page)));
                 document.getElementById('announcements-list').addEventListener('click', handleDelete);
                 document.getElementById('tenders-list').addEventListener('click', handleDelete);
+                document.getElementById('menu-content-key').addEventListener('change', loadSelectedMenuContent);
+                document.getElementById('menu-images-list').addEventListener('click', (e) => {
+                    const button = e.target.closest('[data-asset-type]');
+                    if (!button) return;
+                    menuAssets[button.dataset.assetType].splice(Number(button.dataset.assetIndex), 1);
+                    renderMenuAssets();
+                });
+                document.getElementById('menu-pdfs-list').addEventListener('click', (e) => {
+                    const button = e.target.closest('[data-asset-type]');
+                    if (!button) return;
+                    menuAssets[button.dataset.assetType].splice(Number(button.dataset.assetIndex), 1);
+                    renderMenuAssets();
+                });
+                document.getElementById('menu-content-images').addEventListener('change', async (e) => {
+                    const messageDiv = document.getElementById('menu-content-message');
+                    try {
+                        messageDiv.textContent = 'Uploading image(s)...';
+                        messageDiv.style.color = 'var(--blue)';
+                        const uploaded = await uploadFiles([...e.target.files]);
+                        menuAssets.images.push(...uploaded);
+                        renderMenuAssets();
+                        messageDiv.textContent = 'Image(s) uploaded. Click Save Details to publish.';
+                        messageDiv.style.color = 'var(--green)';
+                    } catch (error) {
+                        messageDiv.textContent = error.message;
+                        messageDiv.style.color = 'var(--red)';
+                    } finally {
+                        e.target.value = '';
+                    }
+                });
+                document.getElementById('menu-content-pdfs').addEventListener('change', async (e) => {
+                    const messageDiv = document.getElementById('menu-content-message');
+                    try {
+                        messageDiv.textContent = 'Uploading PDF(s)...';
+                        messageDiv.style.color = 'var(--blue)';
+                        const uploaded = await uploadFiles([...e.target.files]);
+                        menuAssets.pdfs.push(...uploaded);
+                        renderMenuAssets();
+                        messageDiv.textContent = 'PDF(s) uploaded. Click Save Details to publish.';
+                        messageDiv.style.color = 'var(--green)';
+                    } catch (error) {
+                        messageDiv.textContent = error.message;
+                        messageDiv.style.color = 'var(--red)';
+                    } finally {
+                        e.target.value = '';
+                    }
+                });
 
                 document.getElementById('password-form').addEventListener('submit', async (e) => {
                     e.preventDefault();
@@ -818,6 +1162,28 @@
                     }
                 });
 
+                document.getElementById('menu-content-form').addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const form = e.target;
+                    const payload = Object.fromEntries(new FormData(form));
+                    payload.images = menuAssets.images;
+                    payload.pdfs = menuAssets.pdfs;
+                    const messageDiv = document.getElementById('menu-content-message');
+                    const response = await fetch('/api/menu-content', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const result = await response.json();
+                    messageDiv.textContent = result.message;
+                    messageDiv.style.color = response.ok ? 'var(--green)' : 'var(--red)';
+                    if (response.ok) {
+                        state.menuContent[payload.key] = result.item;
+                        renderMenuContent();
+                        updateStats();
+                    }
+                });
+
                 document.getElementById('tenders-form').addEventListener('submit', async (e) => {
                     e.preventDefault();
                     const form = e.target;
@@ -838,8 +1204,11 @@
 
             const init = async () => {
                 await fetchData();
+                populateMenuOptions();
                 updateStats();
                 renderAnnouncements();
+                renderMenuContent();
+                loadSelectedMenuContent();
                 renderTenders();
                 setupEventListeners();
                 showPage('dashboard');

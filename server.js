@@ -2,21 +2,32 @@ const express = require('express');
 const path = require('path');
 const session = require('express-session');
 const fs = require('fs');
-const open = require('open').default;
 
 const app = express();
 const port = process.env.PORT || 3000;
 
 // --- डेटाबेस सिमुलेशन (JSON फ़ाइल) ---
 const DB_PATH = path.join(__dirname, 'db.json');
+const UPLOAD_DIR = path.join(__dirname, 'uploads');
+
+function normalizeData(data = {}) {
+    return {
+        updates: typeof data.updates === 'string' ? data.updates : '',
+        announcements: Array.isArray(data.announcements) ? data.announcements : [],
+        tenders: Array.isArray(data.tenders) ? data.tenders : [],
+        menuContent: data.menuContent && typeof data.menuContent === 'object' && !Array.isArray(data.menuContent)
+            ? data.menuContent
+            : {}
+    };
+}
 
 function readData() {
     try {
         const data = fs.readFileSync(DB_PATH, 'utf8');
-        return JSON.parse(data);
+        return normalizeData(JSON.parse(data));
     } catch (error) {
         console.log('Database file not found, creating one.');
-        const initialData = { updates: "", announcements: [], tenders: [] };
+        const initialData = normalizeData();
         fs.writeFileSync(DB_PATH, JSON.stringify(initialData, null, 2));
         return initialData;
     }
@@ -26,12 +37,16 @@ function writeData(data) {
     fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2), 'utf8');
 }
 
+function sanitizeFileName(fileName = 'file') {
+    return path.basename(fileName).replace(/[^a-zA-Z0-9._-]/g, '-');
+}
+
 let adminCredentials = {
     username: 'admin',
     password: 'password123'
 };
 
-app.use(express.json());
+app.use(express.json({ limit: '25mb' }));
 app.use(express.urlencoded({ extended: true }));
 
 app.use(session({
@@ -145,6 +160,59 @@ app.delete('/api/announcements/:id', requireLogin, (req, res) => {
     res.status(204).send();
 });
 
+app.post('/api/uploads', requireLogin, (req, res) => {
+    const { name, type, dataUrl } = req.body;
+    if (!name || !type || typeof dataUrl !== 'string') {
+        return res.status(400).json({ message: 'File data is required.' });
+    }
+
+    const isAllowed = type.startsWith('image/') || type === 'application/pdf';
+    if (!isAllowed) {
+        return res.status(400).json({ message: 'Only images and PDF files are allowed.' });
+    }
+
+    const match = dataUrl.match(/^data:([^;]+);base64,(.+)$/);
+    if (!match) {
+        return res.status(400).json({ message: 'Invalid file data.' });
+    }
+
+    const buffer = Buffer.from(match[2], 'base64');
+    if (buffer.length > 15 * 1024 * 1024) {
+        return res.status(400).json({ message: 'File size must be 15 MB or less.' });
+    }
+
+    fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+    const safeName = sanitizeFileName(name);
+    const storedName = `${Date.now()}-${safeName}`;
+    const filePath = path.join(UPLOAD_DIR, storedName);
+    fs.writeFileSync(filePath, buffer);
+
+    res.status(201).json({
+        name: safeName,
+        type,
+        size: buffer.length,
+        url: `/uploads/${storedName}`
+    });
+});
+
+app.post('/api/menu-content', requireLogin, (req, res) => {
+    const { key, label, content, images, pdfs } = req.body;
+    if (!key || !label || typeof content !== 'string') {
+        return res.status(400).json({ message: 'Menu item and details are required.' });
+    }
+
+    const data = readData();
+    data.menuContent[key] = {
+        label,
+        content,
+        images: Array.isArray(images) ? images : [],
+        pdfs: Array.isArray(pdfs) ? pdfs : [],
+        updatedAt: new Date().toISOString()
+    };
+    writeData(data);
+    res.json({ message: 'Menu content saved successfully!', item: data.menuContent[key] });
+});
+
 app.post('/api/tenders', requireLogin, (req, res) => {
     const { publishDate, startDate, endDate, refNo, description, officeDetail, openLink } = req.body;
     if (!publishDate || !startDate || !endDate || !refNo || !description || !officeDetail) {
@@ -184,10 +252,12 @@ app.use(express.static(__dirname, {
     index: false
 }));
 
-app.listen(port, async () => {
+const { exec } = require('child_process');
+
+app.listen(port, () => {
     const url = `http://localhost:${port}`;
 
     console.log(`Server is running at ${url}`);
 
-    await open(url);
+    exec(`start ${url}`);
 });
