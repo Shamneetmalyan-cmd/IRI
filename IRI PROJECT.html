@@ -1310,20 +1310,20 @@
         <span>|</span>
         <a href="mailto:info@iriroorkee.res.in" id="topSecondaryEmail">info@iriroorkee.res.in</a>
         <a href="tel:+911332265174" id="topPhone">Phone: +91-1332-265174</a>
-        <a href="admin-login.html" class="employee-corner" id="employeeCorner">Employee Corner</a>
+        <a href="/admin-login.html" class="employee-corner" id="employeeCorner">Employee Corner</a>
     </div>
 
     <!-- Header Section -->
     <header>
-        <img class="site-logo" src="irilogo.jpg" alt="Irrigation Research Institute logo">
+        <img class="site-logo" src="/irilogo.jpg" alt="Irrigation Research Institute logo">
         <div class="institute-title">
             <h1>सिंचाई अनुसंधान संस्थान, रुड़की</h1>
             <h2>Irrigation Research Institute, Roorkee</h2>
             <h3>Government of Uttarakhand</h3>
         </div>
         <div class="header-logos-right">
-            <img src="goverment of uttarakhand.png" alt="Government of Uttarakhand Logo">
-            <img src="goverment of india.jpg" alt="Government of India Logo">
+            <img src="/goverment of uttarakhand.png" alt="Government of Uttarakhand Logo">
+            <img src="/goverment of india.jpg" alt="Government of India Logo">
         </div>
     </header>
 
@@ -1431,10 +1431,10 @@
     <!-- Hero Image Area -->
     <div class="hero">
         <div class="hero-slide">
-            <img src="1.jpg" alt="IRI Building Front View">
+            <img src="/1.jpg" alt="IRI Building Front View">
         </div>
         <div class="hero-slide">
-            <img src="1 (1).jpg" alt="IRI Building with Bridge">
+            <img src="/1 (1).jpg" alt="IRI Building with Bridge">
         </div>
     </div>
 
@@ -1774,9 +1774,14 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
+        employeeCorner.addEventListener('click', function (event) {
+            event.preventDefault();
+            window.location.href = '/admin-login.html';
+        });
+
         employeeCorner.addEventListener('contextmenu', function (event) {
             event.preventDefault();
-            window.location.href = 'admin-login.html';
+            window.location.href = '/admin-login.html';
         });
 
         contactUsLink.addEventListener('click', function (event) {

@@ -3,13 +3,25 @@ const path = require('path');
 const session = require('express-session');
 const fs = require('fs');
 const helmet = require('helmet'); // Helmet ko import karein
+const { exec } = require('child_process');
 require('dotenv').config(); // Environment variables ko load karein
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = Number(process.env.PORT) || 3000;
 
 // --- Security Best Practice: Use Helmet ---
-app.use(helmet()); // Security headers ke liye
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'", "'unsafe-inline'"],
+            styleSrc: ["'self'", "'unsafe-inline'"],
+            imgSrc: ["'self'", 'data:', 'https://upload.wikimedia.org'],
+            objectSrc: ["'none'"],
+            upgradeInsecureRequests: null
+        }
+    }
+})); // Security headers ke liye
 
 const DB_PATH = path.join(__dirname, 'db.json');
 const UPLOAD_DIR = path.join(__dirname, 'uploads');
@@ -91,6 +103,14 @@ function requireLogin(req, res, next) {
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'IRI PROJECT.html'));
+});
+
+app.get('/IRI PROJECT.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'IRI PROJECT.html'));
+});
+
+app.get('/admin-login.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'admin-login.html'));
 });
 
 app.post('/login', (req, res) => {
@@ -355,18 +375,65 @@ app.delete('/api/tenders/:id', requireLogin, (req, res) => {
     res.status(204).send();
 });
 
-// --- Security Best Practice: Sirf zaroori folders ko hi serve karein ---
-// Note: Iske liye 'irilogo.jpg' ko 'public' naam ke ek naye folder mein move karna hoga.
-app.use(express.static(path.join(__dirname, 'public')));
+const rootPublicFiles = new Set([
+    'irilogo.jpg',
+    'goverment of uttarakhand.png',
+    'goverment of india.jpg',
+    '1.jpg',
+    '1 (1).jpg',
+    '1 (2).jpg',
+    '3.jpg'
+]);
+
+app.get('/:fileName', (req, res, next) => {
+    const fileName = req.params.fileName;
+    if (!rootPublicFiles.has(fileName)) {
+        return next();
+    }
+
+    return res.sendFile(path.join(__dirname, fileName));
+});
+
 // Uploaded files ko '/uploads' route par serve karein
 app.use('/uploads', express.static(UPLOAD_DIR));
 
-const { exec } = require('child_process');
+function openBrowser(url) {
+    if (process.env.AUTO_OPEN === 'false') {
+        return;
+    }
 
-app.listen(port, () => {
-    const url = `http://localhost:${port}`;
+    const command = process.platform === 'win32'
+        ? `start "" "${url}"`
+        : process.platform === 'darwin'
+            ? `open "${url}"`
+            : `xdg-open "${url}"`;
 
-    console.log(`Server is running at ${url}`);
+    exec(command, (error) => {
+        if (error) {
+            console.log(`Could not open browser automatically. Please open ${url}`);
+        }
+    });
+}
 
-    exec(`start ${url}`);
-});
+function startServer(currentPort) {
+    const server = app.listen(currentPort, () => {
+        const url = `http://localhost:${currentPort}`;
+
+        console.log(`Server is running at ${url}`);
+        openBrowser(url);
+    });
+
+    server.on('error', (error) => {
+        if (error.code === 'EADDRINUSE' && !process.env.PORT) {
+            const nextPort = currentPort + 1;
+            console.log(`Port ${currentPort} is busy. Trying ${nextPort}...`);
+            startServer(nextPort);
+            return;
+        }
+
+        console.error(error.message);
+        process.exit(1);
+    });
+}
+
+startServer(port);
