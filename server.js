@@ -4,6 +4,8 @@ const session = require('express-session');
 const fs = require('fs');
 const helmet = require('helmet'); // Helmet ko import karein
 const { exec } = require('child_process');
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
 require('dotenv').config(); // Environment variables ko load karein
 
 const app = express();
@@ -24,7 +26,9 @@ app.use(helmet({
 })); // Security headers ke liye
 
 const DB_PATH = path.join(__dirname, 'db.json');
+const AUTH_PATH = path.join(__dirname, 'auth.json');
 const UPLOAD_DIR = path.join(__dirname, 'uploads');
+const RESET_EMAIL = process.env.RESET_EMAIL || 'shamneetmaliyan123456@gmail.com';
 
 const defaultContactDetails = {
     primaryEmail: 'ce@iriroorkee.res.in',
@@ -68,15 +72,67 @@ function writeData(data) {
     fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2), 'utf8');
 }
 
+function normalizeAuth(auth = {}) {
+    return {
+        username: typeof auth.username === 'string' && auth.username.trim()
+            ? auth.username.trim()
+            : process.env.ADMIN_USERNAME || 'admin',
+        password: typeof auth.password === 'string' && auth.password
+            ? auth.password
+            : process.env.ADMIN_PASSWORD || 'password123'
+    };
+}
+
+function readAuth() {
+    try {
+        const auth = fs.readFileSync(AUTH_PATH, 'utf8');
+        return normalizeAuth(JSON.parse(auth));
+    } catch (error) {
+        const initialAuth = normalizeAuth();
+        fs.writeFileSync(AUTH_PATH, JSON.stringify(initialAuth, null, 2), 'utf8');
+        return initialAuth;
+    }
+}
+
+function writeAuth(auth) {
+    fs.writeFileSync(AUTH_PATH, JSON.stringify(normalizeAuth(auth), null, 2), 'utf8');
+}
+
 function sanitizeFileName(fileName = 'file') {
     return path.basename(fileName).replace(/[^a-zA-Z0-9._-]/g, '-');
 }
 
 // --- Security Best Practice: Credentials ko environment variables se lein ---
-let adminCredentials = {
-    username: process.env.ADMIN_USERNAME || 'admin',
-    password: process.env.ADMIN_PASSWORD || 'password123' // Hashing ka use karein for production
-};
+let adminCredentials = readAuth();
+let passwordReset = null;
+
+function hashResetCode(code) {
+    return crypto.createHash('sha256').update(String(code)).digest('hex');
+}
+
+async function sendResetCodeEmail(code) {
+    if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
+        console.log(`Password reset code for ${RESET_EMAIL}: ${code}`);
+        return false;
+    }
+
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: process.env.SMTP_USER,
+            pass: process.env.SMTP_PASS
+        }
+    });
+
+    await transporter.sendMail({
+        from: `"IRI Admin" <${process.env.SMTP_USER}>`,
+        to: RESET_EMAIL,
+        subject: 'IRI Admin Password Reset Code',
+        text: `Your IRI Admin password reset code is ${code}. This code is valid for 10 minutes.`
+    });
+
+    return true;
+}
 
 app.use(express.json({ limit: '25mb' }));
 app.use(express.urlencoded({ extended: true }));
@@ -148,10 +204,85 @@ app.post('/change-password', requireLogin, (req, res) => {
 
     if (currentPassword === adminCredentials.password) {
         adminCredentials.password = newPassword;
+        writeAuth(adminCredentials);
         return res.send('Password changed successfully. Please use the new password for your next login.');
     }
 
     return res.status(403).send('Incorrect current password.');
+});
+
+app.post('/forgot-password/request', async (req, res) => {
+    const code = crypto.randomInt(100000, 1000000).toString();
+
+    passwordReset = {
+        codeHash: hashResetCode(code),
+        expiresAt: Date.now() + 10 * 60 * 1000,
+        attempts: 0,
+        verified: false,
+        token: null
+    };
+
+    try {
+        const emailSent = await sendResetCodeEmail(code);
+        res.json({
+            message: emailSent
+                ? `6 digit code sent to ${RESET_EMAIL}.`
+                : `Email is not configured yet. Check the server terminal for the 6 digit code.`
+        });
+    } catch (error) {
+        passwordReset = null;
+        res.status(500).json({ message: 'Could not send reset code. Please check SMTP settings.' });
+    }
+});
+
+app.post('/forgot-password/verify', (req, res) => {
+    const { code } = req.body;
+
+    if (!passwordReset || Date.now() > passwordReset.expiresAt) {
+        passwordReset = null;
+        return res.status(400).json({ message: 'Code expired. Please request a new code.' });
+    }
+
+    if (!/^\d{6}$/.test(String(code || ''))) {
+        return res.status(400).json({ message: 'Please enter a valid 6 digit code.' });
+    }
+
+    passwordReset.attempts += 1;
+    if (passwordReset.attempts > 5) {
+        passwordReset = null;
+        return res.status(429).json({ message: 'Too many wrong attempts. Please request a new code.' });
+    }
+
+    if (hashResetCode(code) !== passwordReset.codeHash) {
+        return res.status(400).json({ message: 'Incorrect code.' });
+    }
+
+    passwordReset.verified = true;
+    passwordReset.token = crypto.randomBytes(24).toString('hex');
+    res.json({ message: 'Code verified. Please set a new password.', resetToken: passwordReset.token });
+});
+
+app.post('/forgot-password/reset', (req, res) => {
+    const { resetToken, newPassword, confirmPassword } = req.body;
+
+    if (!passwordReset || !passwordReset.verified || passwordReset.token !== resetToken || Date.now() > passwordReset.expiresAt) {
+        passwordReset = null;
+        return res.status(400).json({ message: 'Reset session expired. Please request a new code.' });
+    }
+
+    if (!newPassword || String(newPassword).length < 6) {
+        return res.status(400).json({ message: 'Password must be at least 6 characters.' });
+    }
+
+    if (newPassword !== confirmPassword) {
+        return res.status(400).json({ message: 'Passwords do not match.' });
+    }
+
+    adminCredentials.password = String(newPassword);
+    writeAuth(adminCredentials);
+    passwordReset = null;
+
+    res.json({ message: 'Password saved successfully. You can login now.' });
 });
 
 // --- API Endpoints ---

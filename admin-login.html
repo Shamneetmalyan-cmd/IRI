@@ -95,6 +95,45 @@
             background: #00335e;
         }
 
+        .link-button {
+            width: auto;
+            display: block;
+            margin: 16px auto 0;
+            padding: 0;
+            border: 0;
+            background: transparent;
+            color: #004b87;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .link-button:hover {
+            background: transparent;
+            text-decoration: underline;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .message {
+            min-height: 20px;
+            margin: 14px 0 0;
+            text-align: center;
+            color: #004b87;
+            font-weight: 700;
+            font-size: 14px;
+            line-height: 1.35;
+        }
+
+        .message.error {
+            color: #b83232;
+        }
+
+        .message.success {
+            color: #237a57;
+        }
+
         .back-link {
             display: block;
             text-align: center;
@@ -145,7 +184,7 @@
         <img class="login-logo" src="/irilogo.jpg" alt="Irrigation Research Institute logo">
         <h1>Admin Login</h1>
         <p class="subtitle">Employee Corner access</p>
-        <form action="/login" method="POST">
+        <form action="/login" method="POST" id="loginForm">
             <label for="username">Username</label>
             <input type="text" id="username" name="username" autocomplete="username" required>
 
@@ -153,8 +192,123 @@
             <input type="password" id="password" name="password" autocomplete="current-password" required>
 
             <button type="submit">Login</button>
+            <button class="link-button" type="button" id="forgotPasswordButton">Forgot Password?</button>
         </form>
+
+        <form class="hidden" id="codeForm">
+            <label for="resetCode">Enter 6 digit code</label>
+            <input type="text" id="resetCode" name="code" inputmode="numeric" maxlength="6" autocomplete="one-time-code" required>
+
+            <button type="submit">Verify Code</button>
+            <button class="link-button" type="button" data-back-login>Back to Login</button>
+        </form>
+
+        <form class="hidden" id="newPasswordForm">
+            <label for="newPassword">New Password</label>
+            <input type="password" id="newPassword" name="newPassword" autocomplete="new-password" minlength="6" required>
+
+            <label for="confirmPassword">Confirm Password</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" autocomplete="new-password" minlength="6" required>
+
+            <button type="submit">Save New Password</button>
+            <button class="link-button" type="button" data-back-login>Back to Login</button>
+        </form>
+
+        <p class="message" id="messageBox"></p>
         <a class="back-link" href="/">Back to Home</a>
     </main>
+
+    <script>
+        const loginForm = document.getElementById('loginForm');
+        const codeForm = document.getElementById('codeForm');
+        const newPasswordForm = document.getElementById('newPasswordForm');
+        const forgotPasswordButton = document.getElementById('forgotPasswordButton');
+        const messageBox = document.getElementById('messageBox');
+        let resetToken = '';
+
+        function showForm(form) {
+            loginForm.classList.toggle('hidden', form !== loginForm);
+            codeForm.classList.toggle('hidden', form !== codeForm);
+            newPasswordForm.classList.toggle('hidden', form !== newPasswordForm);
+        }
+
+        function showMessage(text, type) {
+            messageBox.textContent = text;
+            messageBox.className = `message ${type || ''}`.trim();
+        }
+
+        async function postJson(url, payload) {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload || {})
+            });
+            const data = await response.json().catch(() => ({ message: 'Something went wrong.' }));
+            if (!response.ok) {
+                throw new Error(data.message || 'Something went wrong.');
+            }
+            return data;
+        }
+
+        forgotPasswordButton.addEventListener('click', async () => {
+            forgotPasswordButton.disabled = true;
+            showMessage('Sending 6 digit code...', '');
+            try {
+                const data = await postJson('/forgot-password/request');
+                showMessage(data.message, 'success');
+                showForm(codeForm);
+                document.getElementById('resetCode').focus();
+            } catch (error) {
+                showMessage(error.message, 'error');
+            } finally {
+                forgotPasswordButton.disabled = false;
+            }
+        });
+
+        codeForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            showMessage('Verifying code...', '');
+            try {
+                const data = await postJson('/forgot-password/verify', {
+                    code: document.getElementById('resetCode').value.trim()
+                });
+                resetToken = data.resetToken;
+                showMessage(data.message, 'success');
+                showForm(newPasswordForm);
+                document.getElementById('newPassword').focus();
+            } catch (error) {
+                showMessage(error.message, 'error');
+            }
+        });
+
+        newPasswordForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            showMessage('Saving password...', '');
+            try {
+                const data = await postJson('/forgot-password/reset', {
+                    resetToken,
+                    newPassword: document.getElementById('newPassword').value,
+                    confirmPassword: document.getElementById('confirmPassword').value
+                });
+                resetToken = '';
+                codeForm.reset();
+                newPasswordForm.reset();
+                showMessage(data.message, 'success');
+                showForm(loginForm);
+                document.getElementById('password').value = '';
+                document.getElementById('password').focus();
+            } catch (error) {
+                showMessage(error.message, 'error');
+            }
+        });
+
+        document.querySelectorAll('[data-back-login]').forEach((button) => {
+            button.addEventListener('click', () => {
+                resetToken = '';
+                showMessage('', '');
+                showForm(loginForm);
+            });
+        });
+    </script>
 </body>
 </html>
