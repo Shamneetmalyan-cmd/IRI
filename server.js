@@ -2,11 +2,15 @@ const express = require('express');
 const path = require('path');
 const session = require('express-session');
 const fs = require('fs');
+const helmet = require('helmet'); // Helmet ko import karein
+require('dotenv').config(); // Environment variables ko load karein
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-// --- डेटाबेस सिमुलेशन (JSON फ़ाइल) ---
+// --- Security Best Practice: Use Helmet ---
+app.use(helmet()); // Security headers ke liye
+
 const DB_PATH = path.join(__dirname, 'db.json');
 const UPLOAD_DIR = path.join(__dirname, 'uploads');
 
@@ -56,19 +60,21 @@ function sanitizeFileName(fileName = 'file') {
     return path.basename(fileName).replace(/[^a-zA-Z0-9._-]/g, '-');
 }
 
+// --- Security Best Practice: Credentials ko environment variables se lein ---
 let adminCredentials = {
-    username: 'admin',
-    password: 'password123'
+    username: process.env.ADMIN_USERNAME || 'admin',
+    password: process.env.ADMIN_PASSWORD || 'password123' // Hashing ka use karein for production
 };
 
 app.use(express.json({ limit: '25mb' }));
 app.use(express.urlencoded({ extended: true }));
 
+// --- Security Best Practice: Session secret ko environment variable se lein ---
 app.use(session({
-    secret: 'my-secret-key-for-iri-project',
+    secret: process.env.SESSION_SECRET || 'a-default-fallback-secret-key-is-not-safe',
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false }
+    cookie: { secure: process.env.NODE_ENV === 'production' } // Production mein 'true' set karein (HTTPS ke liye)
 }));
 
 function requireLogin(req, res, next) {
@@ -349,9 +355,11 @@ app.delete('/api/tenders/:id', requireLogin, (req, res) => {
     res.status(204).send();
 });
 
-app.use(express.static(__dirname, {
-    index: false
-}));
+// --- Security Best Practice: Sirf zaroori folders ko hi serve karein ---
+// Note: Iske liye 'irilogo.jpg' ko 'public' naam ke ek naye folder mein move karna hoga.
+app.use(express.static(path.join(__dirname, 'public')));
+// Uploaded files ko '/uploads' route par serve karein
+app.use('/uploads', express.static(UPLOAD_DIR));
 
 const { exec } = require('child_process');
 
