@@ -508,6 +508,7 @@ app.delete('/api/tenders/:id', requireLogin, (req, res) => {
 
 const rootPublicFiles = new Set([
     'irilogo.jpg',
+    'iri-logo-new.jpg',
     'goverment of uttarakhand.png',
     'goverment of india.jpg',
     '1.jpg',

@@ -688,6 +688,7 @@
                 <ul class="nav">
                     <li><button type="button" data-page="dashboard">Dashboard</button></li>
                     <li><button type="button" data-page="latest-updates">Latest Updates</button></li>
+                    <li><button type="button" data-page="home-welcome">Home Welcome</button></li>
                     <li><button type="button" data-page="announcements">Announcements</button></li>
                     <li><button type="button" data-page="menu-content">Menu Content</button></li>
                     <li><button type="button" data-page="contact-details">Contact Details</button></li>
@@ -744,6 +745,30 @@
                         <button class="primary-button" type="submit">Save Updates</button>
                         <div class="message" id="updates-message"></div>
                     </form>
+                </div>
+            </section>
+
+            <section id="home-welcome" class="page">
+                <div class="grid two-column">
+                    <section class="card">
+                        <h2>Edit Homepage Welcome Section</h2>
+                        <form id="home-welcome-form" class="form-grid">
+                            <div>
+                                <label for="home-welcome-title">Section Heading</label>
+                                <input type="text" id="home-welcome-title" name="label" required>
+                            </div>
+                            <div>
+                                <label for="home-welcome-content">Section Text</label>
+                                <textarea id="home-welcome-content" name="content" required placeholder="Write the homepage welcome text here. Use a blank line to create a new paragraph."></textarea>
+                            </div>
+                            <button class="primary-button" type="submit">Save Home Welcome</button>
+                            <div class="message" id="home-welcome-message"></div>
+                        </form>
+                    </section>
+                    <section class="card">
+                        <h2>Current Homepage Welcome</h2>
+                        <div id="home-welcome-preview" class="list"></div>
+                    </section>
                 </div>
             </section>
 
@@ -1021,6 +1046,11 @@
             let editingAnnouncementId = null;
             let editingTenderId = null;
 
+            const defaultHomeWelcome = {
+                label: 'Welcome to Irrigation Research Institute',
+                content: 'The Irrigation Research Institute (IRI), Roorkee was established to carry out research and development activities in the field of irrigation and water resources.\n\nOur mandate includes conducting experimental and theoretical studies in hydraulics, hydrology, soil mechanics, and related disciplines to solve complex engineering problems.'
+            };
+
             const menuItems = [
                 { key: 'home', label: 'Home' },
                 { key: 'about-us', label: 'About Us' },
@@ -1081,6 +1111,7 @@
             const pageInfo = {
                 dashboard: { title: 'Dashboard', subtitle: 'Review website activity and manage public content.' },
                 'latest-updates': { title: 'Latest Updates', subtitle: 'Edit the update text shown on the public website.' },
+                'home-welcome': { title: 'Home Welcome', subtitle: 'Edit the main welcome section shown on the homepage.' },
                 announcements: { title: 'Announcements', subtitle: 'Create and review public announcements.' },
                 'menu-content': { title: 'Menu Content', subtitle: 'Fill details for website menu and submenu pages.' },
                 'contact-details': { title: 'Contact Details', subtitle: 'Edit the emails, phone number, and address shown on the public website.' },
@@ -1458,6 +1489,37 @@
                     }).join('');
             };
 
+            const plainTextToParagraphs = (content = '') => {
+                const lines = String(content || '')
+                    .split(/\n+/)
+                    .map(line => line.trim())
+                    .filter(Boolean);
+                return lines.length ? lines.map(line => `<p>${escapeHtml(line)}</p>`).join('') : '<p>No content saved yet.</p>';
+            };
+
+            const getHomeWelcome = () => ({
+                ...defaultHomeWelcome,
+                ...(state.menuContent && state.menuContent.home ? state.menuContent.home : {})
+            });
+
+            const loadHomeWelcomeForm = () => {
+                const homeWelcome = getHomeWelcome();
+                document.getElementById('home-welcome-title').value = homeWelcome.label || defaultHomeWelcome.label;
+                document.getElementById('home-welcome-content').value = stripRichTextTags(homeWelcome.content || defaultHomeWelcome.content);
+                document.getElementById('home-welcome-message').textContent = '';
+                renderHomeWelcomePreview();
+            };
+
+            const renderHomeWelcomePreview = () => {
+                const homeWelcome = getHomeWelcome();
+                const preview = document.getElementById('home-welcome-preview');
+                preview.innerHTML = `
+                    <div class="list-item">
+                        <strong>${escapeHtml(homeWelcome.label || defaultHomeWelcome.label)}</strong>
+                        ${plainTextToParagraphs(stripRichTextTags(homeWelcome.content || defaultHomeWelcome.content))}
+                    </div>`;
+            };
+
             const loadContactDetailsForm = () => {
                 const contact = state.contactDetails || {};
                 document.getElementById('contact-primary-email').value = contact.primaryEmail || '';
@@ -1582,6 +1644,7 @@
                 document.getElementById('menu-content-count').textContent = Object.keys(state.menuContent || {}).length;
                 document.getElementById('tenders-count').textContent = state.tenders.length;
                 document.getElementById('update-content').value = state.updates;
+                renderHomeWelcomePreview();
                 renderContactDetailsPreview();
             };
 
@@ -1701,6 +1764,32 @@
                     messageDiv.style.color = response.ok ? 'var(--green)' : 'var(--red)';
                 });
 
+                document.getElementById('home-welcome-form').addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const payload = {
+                        key: 'home',
+                        label: document.getElementById('home-welcome-title').value.trim(),
+                        content: document.getElementById('home-welcome-content').value.trim(),
+                        images: Array.isArray(state.menuContent.home?.images) ? state.menuContent.home.images : [],
+                        pdfs: Array.isArray(state.menuContent.home?.pdfs) ? state.menuContent.home.pdfs : []
+                    };
+                    const messageDiv = document.getElementById('home-welcome-message');
+                    const response = await fetch('/api/menu-content', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const result = await response.json();
+                    messageDiv.textContent = response.ok ? 'Homepage welcome section saved successfully.' : result.message;
+                    messageDiv.style.color = response.ok ? 'var(--green)' : 'var(--red)';
+                    if (response.ok) {
+                        state.menuContent.home = result.item;
+                        renderHomeWelcomePreview();
+                        renderMenuContent();
+                        updateStats();
+                    }
+                });
+
                 document.getElementById('announcements-form').addEventListener('submit', async (e) => {
                     e.preventDefault();
                     const form = e.target;
@@ -1810,6 +1899,7 @@
                 updateStats();
                 renderAnnouncements();
                 renderMenuContent();
+                loadHomeWelcomeForm();
                 loadSelectedMenuContent();
                 loadContactDetailsForm();
                 renderTenders();
