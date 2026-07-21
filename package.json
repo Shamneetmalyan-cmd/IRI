@@ -3,8 +3,10 @@
     "start": "node server.js"
   },
   "dependencies": {
+    "dotenv": "^16.3.1",
     "express": "^5.2.1",
     "express-session": "^1.19.0",
-    "open": "^11.0.0"
+    "helmet": "^7.1.0",
+    "nodemailer": "^9.0.3"
   }
 }
