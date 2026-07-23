@@ -1,110 +1,17 @@
 {
-  "updates": "PROCUREMENT OF\nNON-CONSULTANCY SERVICES\nUNDER\nSHOPPING PROCEDURES\n(RFQ No: 01 /PO-2/SPMU/NJ-IP/2026-27)",
-  "announcements": [
-    {
-      "id": 1782581725393,
-      "title": "aniirudddh boy ",
-      "content": "cute boy ",
-      "date": "2026-06-27T17:35:25.393Z"
-    },
-    {
-      "id": 1782581710582,
-      "title": "shamneet malyan",
-      "content": "very good boy ",
-      "date": "2026-06-27T17:35:10.582Z"
-    }
-  ],
-  "tenders": [
-    {
-      "id": 1782581605158,
-      "publishDate": "0077-07-05",
-      "startDate": "0048-04-05",
-      "endDate": "0045-04-05",
-      "refNo": "4864877",
-      "description": " kgnerjgornpsbngkejipejg;orn",
-      "officeDetail": "487977",
-      "openLink": "",
-      "date": "2026-06-27T17:33:25.158Z"
-    },
-    {
-      "id": 1782581564197,
-      "publishDate": "5448-04-15",
-      "startDate": "0484-04-05",
-      "endDate": "0484-04-04",
-      "refNo": "48484484",
-      "description": "heuhhfiohughuervhuerhiuerhfilsbuerhvebvkdfbviuhenioerhgrwhf",
-      "officeDetail": "5484984",
-      "openLink": "",
-      "date": "2026-06-27T17:32:44.197Z"
-    }
-  ],
-  "menuContent": {
-    "about-iri-roorkee": {
-      "label": "About IRI Roorkeekrngiorgirgirw",
-      "content": "rwklnfrwkngirwgsjv jbvwfvjewbnfewughwengilrsbvurwrwnglneruvhernverinbhoerjgpoermgerngiorw",
-      "images": [
-        {
-          "name": "Screenshot-2026-06-27-115628.png",
-          "type": "image/png",
-          "size": 6974,
-          "url": "/uploads/1782581777566-Screenshot-2026-06-27-115628.png"
-        },
-        {
-          "name": "WhatsApp-Image-2026-03-13-at-3.56.47-PM.jpeg",
-          "type": "image/jpeg",
-          "size": 137885,
-          "url": "/uploads/1782827704426-WhatsApp-Image-2026-03-13-at-3.56.47-PM.jpeg"
-        }
-      ],
-      "pdfs": [
-        {
-          "name": "AdmitCard-260410659701.pdf",
-          "type": "application/pdf",
-          "size": 754691,
-          "url": "/uploads/1782827596951-AdmitCard-260410659701.pdf"
-        }
-      ],
-      "updatedAt": "2026-06-30T13:55:09.628Z"
-    },
-    "contact-us": {
-      "label": "ghcytct",
-      "content": "jhiugbyfyfvvyggbbgiyg\n",
-      "images": [],
-      "pdfs": [],
-      "updatedAt": "2026-06-27T17:41:34.971Z"
-    },
-    "highway-lab": {
-      "label": "Highway Laboratory",
-      "content": "juyufytf\n",
-      "images": [],
-      "pdfs": [],
-      "updatedAt": "2026-06-30T14:18:27.431Z"
-    },
-    "introduction-hydraulic-model-studies": {
-      "label": "An Introduction to Hydraulic Model Studies",
-      "content": "yrsgtrfxdgfrxd",
-      "images": [],
-      "pdfs": [],
-      "updatedAt": "2026-06-30T14:17:59.811Z"
-    },
-    "common-facilities": {
-      "label": "Common facilities",
-      "content": "tdtye767rre67r7",
-      "images": [],
-      "pdfs": [],
-      "updatedAt": "2026-07-02T06:25:39.321Z"
-    }
-  },
+  "updates": "",
+  "announcements": [],
+  "tenders": [],
+  "menuContent": {},
   "contactDetails": {
     "primaryEmail": "ce@iriroorkee.res.in",
     "secondaryEmail": "info@iriroorkee.res.in",
-    "phoneDisplay": "1+91-1332-265174",
-    "phoneLink": "2 +911332265174",
-    "address": "1Irrigation Research Institute, Roorkee, Uttarakhand",
-    "fax": "1+91 - 1332 - 262487",
-    "contactTitle": "2 An ISO 9001: 2008 Certified Organization",
-    "directorTitle": "3 Chief Engineer (Design) & Director",
-    "queryText": "For any Information/Query related to Hydraulic Model Study/Testing etc.",
-    "updatedAt": "2026-06-30T14:30:33.980Z"
+    "phoneDisplay": "+91-1332-265174",
+    "phoneLink": "+911332265174",
+    "address": "Irrigation Research Institute, Roorkee, Uttarakhand",
+    "fax": "+91 - 1332 - 262487",
+    "contactTitle": "An ISO 9001: 2008 Certified Organization",
+    "directorTitle": "Chief Engineer (Design) & Director",
+    "queryText": "For any Information/Query related to Hydraulic Model Study/Testing etc."
   }
 }

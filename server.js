@@ -3,6 +3,7 @@ const path = require('path');
 const session = require('express-session');
 const fs = require('fs');
 const helmet = require('helmet'); // Helmet ko import karein
+const sqlite3 = require('sqlite3').verbose();
 const { exec } = require('child_process');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
@@ -25,9 +26,10 @@ app.use(helmet({
     }
 })); // Security headers ke liye
 
-const DB_PATH = path.join(__dirname, 'db.json');
-const AUTH_PATH = path.join(__dirname, 'auth.json');
+const DB_PATH_SQL = path.join(__dirname, 'database.sqlite');
 const UPLOAD_DIR = path.join(__dirname, 'uploads');
+const LEGACY_DB_PATH = path.join(__dirname, 'db.json');
+const LEGACY_AUTH_PATH = path.join(__dirname, 'auth.json');
 const RESET_EMAIL = process.env.RESET_EMAIL || 'shamneetmaliyan123456@gmail.com';
 
 const defaultContactDetails = {
@@ -42,60 +44,114 @@ const defaultContactDetails = {
     queryText: 'For any Information/Query related to Hydraulic Model Study/Testing etc.'
 };
 
-function normalizeData(data = {}) {
-    return {
-        updates: typeof data.updates === 'string' ? data.updates : '',
-        announcements: Array.isArray(data.announcements) ? data.announcements : [],
-        tenders: Array.isArray(data.tenders) ? data.tenders : [],
-        menuContent: data.menuContent && typeof data.menuContent === 'object' && !Array.isArray(data.menuContent)
-            ? data.menuContent
-            : {},
-        contactDetails: data.contactDetails && typeof data.contactDetails === 'object' && !Array.isArray(data.contactDetails)
-            ? { ...defaultContactDetails, ...data.contactDetails }
-            : { ...defaultContactDetails }
-    };
-}
-
-function readData() {
-    try {
-        const data = fs.readFileSync(DB_PATH, 'utf8');
-        return normalizeData(JSON.parse(data));
-    } catch (error) {
-        console.log('Database file not found, creating one.');
-        const initialData = normalizeData();
-        fs.writeFileSync(DB_PATH, JSON.stringify(initialData, null, 2));
-        return initialData;
+// --- Database Setup ---
+const db = new sqlite3.Database(DB_PATH_SQL, (err) => {
+    if (err) {
+        console.error('Error opening database', err.message);
+        process.exit(1);
+    } else {
+        console.log('Connected to the SQLite database.');
+        initializeDb();
     }
+});
+
+function initializeDb() {
+    db.serialize(() => {
+        db.run(`CREATE TABLE IF NOT EXISTS key_value (key TEXT PRIMARY KEY, value TEXT)`);
+        db.run(`CREATE TABLE IF NOT EXISTS announcements (id INTEGER PRIMARY KEY, title TEXT NOT NULL, content TEXT NOT NULL, date TEXT NOT NULL, updatedAt TEXT)`);
+        db.run(`CREATE TABLE IF NOT EXISTS tenders (id INTEGER PRIMARY KEY, publishDate TEXT, startDate TEXT, endDate TEXT, refNo TEXT, description TEXT, officeDetail TEXT, openLink TEXT, date TEXT, updatedAt TEXT)`);
+        db.run(`CREATE TABLE IF NOT EXISTS menu_content (key TEXT PRIMARY KEY, label TEXT, content TEXT, images TEXT, pdfs TEXT, updatedAt TEXT)`);
+        db.run(`CREATE TABLE IF NOT EXISTS auth (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL UNIQUE, password TEXT NOT NULL)`);
+
+        // Check for migration from JSON files
+        if (fs.existsSync(LEGACY_DB_PATH) || fs.existsSync(LEGACY_AUTH_PATH)) {
+            console.log('Found old JSON database. Attempting to migrate to SQLite...');
+            migrateDataFromJsons();
+        } else {
+            // Ensure default admin exists if auth table is empty
+            db.get('SELECT COUNT(*) as count FROM auth', (err, row) => {
+                if (row && row.count === 0) {
+                    const defaultUser = process.env.ADMIN_USERNAME || 'admin';
+                    const defaultPass = process.env.ADMIN_PASSWORD || 'password123';
+                    db.run('INSERT INTO auth (username, password) VALUES (?, ?)', [defaultUser, defaultPass], (err) => {
+                        if (!err) console.log('Inserted default admin user.');
+                    });
+                }
+            });
+        }
+    });
 }
 
-function writeData(data) {
-    fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2), 'utf8');
-}
-
-function normalizeAuth(auth = {}) {
-    return {
-        username: typeof auth.username === 'string' && auth.username.trim()
-            ? auth.username.trim()
-            : process.env.ADMIN_USERNAME || 'admin',
-        password: typeof auth.password === 'string' && auth.password
-            ? auth.password
-            : process.env.ADMIN_PASSWORD || 'password123'
-    };
-}
-
-function readAuth() {
-    try {
-        const auth = fs.readFileSync(AUTH_PATH, 'utf8');
-        return normalizeAuth(JSON.parse(auth));
-    } catch (error) {
-        const initialAuth = normalizeAuth();
-        fs.writeFileSync(AUTH_PATH, JSON.stringify(initialAuth, null, 2), 'utf8');
-        return initialAuth;
+function migrateDataFromJsons() {
+    // Helper functions for migration, copied from original file
+    function normalizeData(data = {}) {
+        return {
+            updates: typeof data.updates === 'string' ? data.updates : '',
+            announcements: Array.isArray(data.announcements) ? data.announcements : [],
+            tenders: Array.isArray(data.tenders) ? data.tenders : [],
+            menuContent: data.menuContent && typeof data.menuContent === 'object' && !Array.isArray(data.menuContent) ? data.menuContent : {},
+            contactDetails: data.contactDetails && typeof data.contactDetails === 'object' && !Array.isArray(data.contactDetails) ? { ...defaultContactDetails, ...data.contactDetails } : { ...defaultContactDetails }
+        };
     }
-}
+    function normalizeAuth(auth = {}) {
+        return {
+            username: typeof auth.username === 'string' && auth.username.trim() ? auth.username.trim() : process.env.ADMIN_USERNAME || 'admin',
+            password: typeof auth.password === 'string' && auth.password ? auth.password : process.env.ADMIN_PASSWORD || 'password123'
+        };
+    }
 
-function writeAuth(auth) {
-    fs.writeFileSync(AUTH_PATH, JSON.stringify(normalizeAuth(auth), null, 2), 'utf8');
+    db.get('SELECT 1 FROM auth LIMIT 1', (err, row) => {
+        if (row) {
+            console.log('Data seems to be already migrated. Renaming old JSON files.');
+            if (fs.existsSync(LEGACY_DB_PATH)) fs.renameSync(LEGACY_DB_PATH, LEGACY_DB_PATH + '.migrated');
+            if (fs.existsSync(LEGACY_AUTH_PATH)) fs.renameSync(LEGACY_AUTH_PATH, LEGACY_AUTH_PATH + '.migrated');
+            return;
+        }
+
+        db.serialize(() => {
+            // Migrate auth.json
+            if (fs.existsSync(LEGACY_AUTH_PATH)) {
+                try {
+                    const authData = JSON.parse(fs.readFileSync(LEGACY_AUTH_PATH, 'utf8'));
+                    const normalizedAuth = normalizeAuth(authData);
+                    db.run('INSERT INTO auth (username, password) VALUES (?, ?)', [normalizedAuth.username, normalizedAuth.password],
+                        (err) => !err && console.log('Migrated auth data.'));
+                } catch (e) { console.error('Could not parse or migrate auth.json', e); }
+            }
+
+            // Migrate db.json
+            if (fs.existsSync(LEGACY_DB_PATH)) {
+                try {
+                    const dbData = JSON.parse(fs.readFileSync(LEGACY_DB_PATH, 'utf8'));
+                    const data = normalizeData(dbData);
+
+                    db.run("INSERT OR REPLACE INTO key_value (key, value) VALUES ('updates', ?)", [data.updates]);
+                    db.run("INSERT OR REPLACE INTO key_value (key, value) VALUES ('contactDetails', ?)", [JSON.stringify(data.contactDetails)]);
+
+                    const annStmt = db.prepare('INSERT INTO announcements (id, title, content, date, updatedAt) VALUES (?, ?, ?, ?, ?)');
+                    data.announcements.forEach(a => annStmt.run(a.id, a.title, a.content, a.date, a.updatedAt));
+                    annStmt.finalize();
+
+                    const tenStmt = db.prepare('INSERT INTO tenders (id, publishDate, startDate, endDate, refNo, description, officeDetail, openLink, date, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+                    data.tenders.forEach(t => tenStmt.run(t.id, t.publishDate, t.startDate, t.endDate, t.refNo, t.description, t.officeDetail, t.openLink, t.date, t.updatedAt));
+                    tenStmt.finalize();
+
+                    const menuStmt = db.prepare('INSERT INTO menu_content (key, label, content, images, pdfs, updatedAt) VALUES (?, ?, ?, ?, ?, ?)');
+                    for (const key in data.menuContent) {
+                        const item = data.menuContent[key];
+                        menuStmt.run(key, item.label, item.content, JSON.stringify(item.images || []), JSON.stringify(item.pdfs || []), item.updatedAt);
+                    }
+                    menuStmt.finalize(() => console.log('Finished migrating db.json.'));
+
+                } catch (e) { console.error('Could not parse or migrate db.json', e); }
+            }
+
+            // Rename files after migration
+            if (fs.existsSync(LEGACY_DB_PATH)) fs.renameSync(LEGACY_DB_PATH, LEGACY_DB_PATH + '.migrated');
+            if (fs.existsSync(LEGACY_AUTH_PATH)) fs.renameSync(LEGACY_AUTH_PATH, LEGACY_AUTH_PATH + '.migrated');
+            console.log('Renamed old JSON files to .migrated');
+        });
+    });
 }
 
 function sanitizeFileName(fileName = 'file') {
@@ -103,7 +159,6 @@ function sanitizeFileName(fileName = 'file') {
 }
 
 // --- Security Best Practice: Credentials ko environment variables se lein ---
-let adminCredentials = readAuth();
 let passwordReset = null;
 
 function hashResetCode(code) {
@@ -171,13 +226,17 @@ app.get('/admin-login.html', (req, res) => {
 
 app.post('/login', (req, res) => {
     const { username, password } = req.body;
-
-    if (username === adminCredentials.username && password === adminCredentials.password) {
-        req.session.user = 'admin';
-        return res.redirect('/admin-dashboard.html');
+    if (!username || !password) {
+        return res.status(400).send('<h1>Login Failed</h1><p>Username and password are required.</p><a href="/admin-login.html">Try again</a>');
     }
 
-    return res.status(401).send('<h1>Login Failed</h1><p>Invalid username or password.</p><a href="/admin-login.html">Try again</a>');
+    db.get('SELECT * FROM auth WHERE username = ?', [username], (err, user) => {
+        if (err || !user || user.password !== password) {
+            return res.status(401).send('<h1>Login Failed</h1><p>Invalid username or password.</p><a href="/admin-login.html">Try again</a>');
+        }
+        req.session.user = user.username;
+        res.redirect('/admin-dashboard.html');
+    });
 });
 
 app.get('/admin-dashboard.html', requireLogin, (req, res) => {
@@ -202,13 +261,22 @@ app.post('/change-password', requireLogin, (req, res) => {
         return res.status(400).send('New password and confirmation do not match.');
     }
 
-    if (currentPassword === adminCredentials.password) {
-        adminCredentials.password = newPassword;
-        writeAuth(adminCredentials);
-        return res.send('Password changed successfully. Please use the new password for your next login.');
-    }
+    db.get('SELECT * FROM auth WHERE username = ?', [req.session.user], (err, user) => {
+        if (err || !user) {
+            return res.status(500).send('Could not find user account.');
+        }
 
-    return res.status(403).send('Incorrect current password.');
+        if (currentPassword !== user.password) {
+            return res.status(403).send('Incorrect current password.');
+        }
+
+        db.run('UPDATE auth SET password = ? WHERE username = ?', [newPassword, req.session.user], (updateErr) => {
+            if (updateErr) {
+                return res.status(500).send('Error changing password.');
+            }
+            res.send('Password changed successfully. Please use the new password for your next login.');
+        });
+    });
 });
 
 app.post('/forgot-password/request', async (req, res) => {
@@ -278,24 +346,60 @@ app.post('/forgot-password/reset', (req, res) => {
         return res.status(400).json({ message: 'Passwords do not match.' });
     }
 
-    adminCredentials.password = String(newPassword);
-    writeAuth(adminCredentials);
-    passwordReset = null;
-
-    res.json({ message: 'Password saved successfully. You can login now.' });
+    // In a single-admin setup, we update the first user found.
+    db.run('UPDATE auth SET password = ? WHERE id = (SELECT id FROM auth LIMIT 1)', [String(newPassword)], function (err) {
+        if (err) {
+            return res.status(500).json({ message: 'Error saving new password.' });
+        }
+        passwordReset = null;
+        res.json({ message: 'Password saved successfully. You can login now.' });
+    });
 });
 
 // --- API Endpoints ---
 
-app.get('/api/data', requireLogin, (req, res) => {
-    const data = readData();
-    res.json(data);
+const getAllData = async () => {
+    const data = {};
+    const queries = [
+        new Promise((resolve, reject) => db.get("SELECT value FROM key_value WHERE key = 'updates'", (e, r) => e ? reject(e) : resolve(data.updates = r ? r.value : ''))),
+        new Promise((resolve, reject) => db.all("SELECT * FROM announcements ORDER BY date DESC", (e, r) => e ? reject(e) : resolve(data.announcements = r || []))),
+        new Promise((resolve, reject) => db.all("SELECT * FROM tenders ORDER BY date DESC", (e, r) => e ? reject(e) : resolve(data.tenders = r || []))),
+        new Promise((resolve, reject) => db.all("SELECT * FROM menu_content", (e, r) => {
+            if (e) return reject(e);
+            data.menuContent = {};
+            (r || []).forEach(row => {
+                data.menuContent[row.key] = { ...row, images: JSON.parse(row.images || '[]'), pdfs: JSON.parse(row.pdfs || '[]') };
+            });
+            resolve();
+        })),
+        new Promise((resolve, reject) => db.get("SELECT value FROM key_value WHERE key = 'contactDetails'", (e, r) => {
+            if (e) return reject(e);
+            const savedDetails = r ? JSON.parse(r.value) : {};
+            data.contactDetails = { ...defaultContactDetails, ...savedDetails };
+            resolve();
+        }))
+    ];
+    await Promise.all(queries);
+    return data;
+};
+
+app.get('/api/data', requireLogin, async (req, res) => {
+    try {
+        const data = await getAllData();
+        res.json(data);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching data.' });
+    }
 });
 
-app.get('/api/public-data', (req, res) => {
-    const data = readData();
-    res.set('Cache-Control', 'no-store');
-    res.json(data);
+app.get('/api/public-data', async (req, res) => {
+    try {
+        const data = await getAllData();
+        res.set('Cache-Control', 'no-store');
+        res.json(data);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching data.' });
+    }
 });
 
 app.post('/api/updates', requireLogin, (req, res) => {
@@ -303,10 +407,13 @@ app.post('/api/updates', requireLogin, (req, res) => {
     if (typeof content !== 'string') {
         return res.status(400).json({ message: 'Content must be a string.' });
     }
-    const data = readData();
-    data.updates = content;
-    writeData(data);
-    res.json({ message: 'Updates saved successfully!' });
+    db.run("INSERT OR REPLACE INTO key_value (key, value) VALUES ('updates', ?)", [content], function (err) {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ message: 'Could not save updates.' });
+        }
+        res.json({ message: 'Updates saved successfully!' });
+    });
 });
 
 app.post('/api/contact-details', requireLogin, (req, res) => {
@@ -326,8 +433,7 @@ app.post('/api/contact-details', requireLogin, (req, res) => {
         return res.status(400).json({ message: 'Primary email, secondary email, phone, phone link, and address are required.' });
     }
 
-    const data = readData();
-    data.contactDetails = {
+    const contactDetails = {
         primaryEmail: String(primaryEmail).trim(),
         secondaryEmail: String(secondaryEmail).trim(),
         phoneDisplay: String(phoneDisplay).trim(),
@@ -339,8 +445,13 @@ app.post('/api/contact-details', requireLogin, (req, res) => {
         queryText: String(queryText || defaultContactDetails.queryText).trim(),
         updatedAt: new Date().toISOString()
     };
-    writeData(data);
-    res.json({ message: 'Contact details saved successfully!', contactDetails: data.contactDetails });
+
+    db.run("INSERT OR REPLACE INTO key_value (key, value) VALUES ('contactDetails', ?)", [JSON.stringify(contactDetails)], function (err) {
+        if (err) {
+            return res.status(500).json({ message: 'Could not save contact details.' });
+        }
+        res.json({ message: 'Contact details saved successfully!', contactDetails });
+    });
 });
 
 app.post('/api/announcements', requireLogin, (req, res) => {
@@ -348,11 +459,14 @@ app.post('/api/announcements', requireLogin, (req, res) => {
     if (!title || !content) {
         return res.status(400).json({ message: 'Title and content are required.' });
     }
-    const data = readData();
-    const newAnnouncement = { id: Date.now(), title, content, date: new Date().toISOString() };
-    data.announcements.unshift(newAnnouncement);
-    writeData(data);
-    res.status(201).json(newAnnouncement);
+    const date = new Date().toISOString();
+    const id = Date.now();
+    db.run('INSERT INTO announcements (id, title, content, date) VALUES (?, ?, ?, ?)', [id, title, content, date], function (err) {
+        if (err) {
+            return res.status(500).json({ message: 'Could not save announcement.' });
+        }
+        res.status(201).json({ id, title, content, date });
+    });
 });
 
 app.put('/api/announcements/:id', requireLogin, (req, res) => {
@@ -362,32 +476,31 @@ app.put('/api/announcements/:id', requireLogin, (req, res) => {
         return res.status(400).json({ message: 'Title and content are required.' });
     }
 
-    const data = readData();
-    const index = data.announcements.findIndex(a => a.id === id);
-    if (index === -1) {
-        return res.status(404).json({ message: 'Announcement not found.' });
-    }
-
-    data.announcements[index] = {
-        ...data.announcements[index],
-        title,
-        content,
-        updatedAt: new Date().toISOString()
-    };
-    writeData(data);
-    res.json(data.announcements[index]);
+    const updatedAt = new Date().toISOString();
+    db.run('UPDATE announcements SET title = ?, content = ?, updatedAt = ? WHERE id = ?', [title, content, updatedAt, id], function (err) {
+        if (err) {
+            return res.status(500).json({ message: 'Could not update announcement.' });
+        }
+        if (this.changes === 0) {
+            return res.status(404).json({ message: 'Announcement not found.' });
+        }
+        db.get('SELECT * FROM announcements WHERE id = ?', [id], (err, row) => {
+            res.json(row);
+        });
+    });
 });
 
 app.delete('/api/announcements/:id', requireLogin, (req, res) => {
     const id = parseInt(req.params.id, 10);
-    const data = readData();
-    const initialLength = data.announcements.length;
-    data.announcements = data.announcements.filter(a => a.id !== id);
-    if (data.announcements.length === initialLength) {
-        return res.status(404).json({ message: 'Announcement not found.' });
-    }
-    writeData(data);
-    res.status(204).send();
+    db.run('DELETE FROM announcements WHERE id = ?', [id], function (err) {
+        if (err) {
+            return res.status(500).json({ message: 'Could not delete announcement.' });
+        }
+        if (this.changes === 0) {
+            return res.status(404).json({ message: 'Announcement not found.' });
+        }
+        res.status(204).send();
+    });
 });
 
 app.post('/api/uploads', requireLogin, (req, res) => {
@@ -431,16 +544,21 @@ app.post('/api/menu-content', requireLogin, (req, res) => {
         return res.status(400).json({ message: 'Menu item and details are required.' });
     }
 
-    const data = readData();
-    data.menuContent[key] = {
+    const item = {
         label,
         content,
         images: Array.isArray(images) ? images : [],
         pdfs: Array.isArray(pdfs) ? pdfs : [],
         updatedAt: new Date().toISOString()
     };
-    writeData(data);
-    res.json({ message: 'Menu content saved successfully!', item: data.menuContent[key] });
+
+    db.run('INSERT OR REPLACE INTO menu_content (key, label, content, images, pdfs, updatedAt) VALUES (?, ?, ?, ?, ?, ?)',
+        [key, item.label, item.content, JSON.stringify(item.images), JSON.stringify(item.pdfs), item.updatedAt], function (err) {
+            if (err) {
+                return res.status(500).json({ message: 'Could not save menu content.' });
+            }
+            res.json({ message: 'Menu content saved successfully!', item });
+        });
 });
 
 app.post('/api/tenders', requireLogin, (req, res) => {
@@ -449,8 +567,7 @@ app.post('/api/tenders', requireLogin, (req, res) => {
         return res.status(400).json({ message: 'All tender fields except open link are required.' });
     }
 
-    const data = readData();
-    const newTender = {
+    const tender = {
         id: Date.now(),
         publishDate,
         startDate,
@@ -461,9 +578,14 @@ app.post('/api/tenders', requireLogin, (req, res) => {
         openLink: openLink || '',
         date: new Date().toISOString()
     };
-    data.tenders.unshift(newTender);
-    writeData(data);
-    res.status(201).json(newTender);
+
+    db.run('INSERT INTO tenders (id, publishDate, startDate, endDate, refNo, description, officeDetail, openLink, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [tender.id, tender.publishDate, tender.startDate, tender.endDate, tender.refNo, tender.description, tender.officeDetail, tender.openLink, tender.date], function (err) {
+            if (err) {
+                return res.status(500).json({ message: 'Could not save tender.' });
+            }
+            res.status(201).json(tender);
+        });
 });
 
 app.put('/api/tenders/:id', requireLogin, (req, res) => {
@@ -473,37 +595,32 @@ app.put('/api/tenders/:id', requireLogin, (req, res) => {
         return res.status(400).json({ message: 'All tender fields except open link are required.' });
     }
 
-    const data = readData();
-    const index = data.tenders.findIndex(t => t.id === id);
-    if (index === -1) {
-        return res.status(404).json({ message: 'Tender not found.' });
-    }
-
-    data.tenders[index] = {
-        ...data.tenders[index],
-        publishDate,
-        startDate,
-        endDate,
-        refNo,
-        description,
-        officeDetail,
-        openLink: openLink || '',
-        updatedAt: new Date().toISOString()
-    };
-    writeData(data);
-    res.json(data.tenders[index]);
+    const updatedAt = new Date().toISOString();
+    db.run('UPDATE tenders SET publishDate=?, startDate=?, endDate=?, refNo=?, description=?, officeDetail=?, openLink=?, updatedAt=? WHERE id = ?',
+        [publishDate, startDate, endDate, refNo, description, officeDetail, openLink || '', updatedAt, id], function (err) {
+            if (err) {
+                return res.status(500).json({ message: 'Could not update tender.' });
+            }
+            if (this.changes === 0) {
+                return res.status(404).json({ message: 'Tender not found.' });
+            }
+            db.get('SELECT * FROM tenders WHERE id = ?', [id], (err, row) => {
+                res.json(row);
+            });
+        });
 });
 
 app.delete('/api/tenders/:id', requireLogin, (req, res) => {
     const id = parseInt(req.params.id, 10);
-    const data = readData();
-    const initialLength = data.tenders.length;
-    data.tenders = data.tenders.filter(t => t.id !== id);
-    if (data.tenders.length === initialLength) {
-        return res.status(404).json({ message: 'Tender not found.' });
-    }
-    writeData(data);
-    res.status(204).send();
+    db.run('DELETE FROM tenders WHERE id = ?', [id], function (err) {
+        if (err) {
+            return res.status(500).json({ message: 'Could not delete tender.' });
+        }
+        if (this.changes === 0) {
+            return res.status(404).json({ message: 'Tender not found.' });
+        }
+        res.status(204).send();
+    });
 });
 
 const rootPublicFiles = new Set([
