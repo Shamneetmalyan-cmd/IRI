@@ -93,6 +93,27 @@
       "images": [],
       "pdfs": [],
       "updatedAt": "2026-07-02T06:25:39.321Z"
+    },
+    "hydraulics-research-station": {
+      "label": "Hydraulics Research Station (Bahadrabad)",
+      "content": "My life my rule",
+      "images": [
+        {
+          "name": "Screenshot--18-.png",
+          "type": "image/png",
+          "size": 3358237,
+          "url": "/uploads/1784786535321-Screenshot--18-.png"
+        }
+      ],
+      "pdfs": [
+        {
+          "name": "Marks-sheet-1stYR.pdf",
+          "type": "application/pdf",
+          "size": 221129,
+          "url": "/uploads/1784786551626-Marks-sheet-1stYR.pdf"
+        }
+      ],
+      "updatedAt": "2026-07-23T06:02:34.445Z"
     }
   },
   "contactDetails": {

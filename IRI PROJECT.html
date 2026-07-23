@@ -430,6 +430,21 @@
             overflow-wrap: anywhere;
         }
 
+        .content-with-assets {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(200px, 0.9fr);
+            gap: 24px;
+            align-items: start;
+        }
+
+        .content-text {
+            min-width: 0;
+        }
+
+        .content-with-assets .content-assets {
+            margin-top: 0;
+        }
+
         .content-assets {
             margin-top: 28px;
             display: grid;
@@ -444,7 +459,7 @@
 
         .content-image-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 14px;
         }
 
@@ -983,6 +998,13 @@
 
             .footer-content {
                 gap: 34px;
+            }
+        }
+
+        @media (max-width: 540px) {
+            .content-with-assets {
+                grid-template-columns: 1fr;
+                gap: 24px;
             }
         }
 
@@ -1630,6 +1652,16 @@
             return `<div class="content-assets">${imagesHtml}${pdfsHtml}</div>`;
         }
 
+        function renderContentWithAssets(contentHtml, item = {}) {
+            const assetsHtml = renderMenuAssetsHtml(item);
+            if (!assetsHtml) return contentHtml;
+
+            return `<div class="content-with-assets">
+                <div class="content-text">${contentHtml}</div>
+                ${assetsHtml}
+            </div>`;
+        }
+
         function showContactPage() {
             document.body.classList.add('contact-open');
             document.body.classList.remove('tenders-open');
@@ -1661,7 +1693,7 @@
             const title = saved.label || fallbackLabel || 'Information';
             const content = saved.content || 'Details will be updated soon.';
             menuContentTitle.textContent = title;
-            menuContentBody.innerHTML = `${escapeContentHtml(content)}${renderMenuAssetsHtml(saved)}`;
+            menuContentBody.innerHTML = renderContentWithAssets(escapeContentHtml(content), saved);
             document.body.classList.remove('contact-open');
             document.body.classList.remove('tenders-open');
             document.body.classList.add('content-open');
@@ -1831,11 +1863,11 @@
 
         function applySpecialMenuContent(menuContent) {
             const homeContent = menuContent && menuContent.home;
-            if (homeContent && homeContent.content) {
+            if (homeContent) {
                 const homeTitle = document.getElementById('homeMainTitle');
                 const homeBody = document.getElementById('homeMainBody');
                 if (homeTitle) homeTitle.textContent = homeContent.label || 'Home';
-                if (homeBody) homeBody.innerHTML = `${textToParagraphs(homeContent.content)}${renderMenuAssetsHtml(homeContent)}`;
+                if (homeBody) homeBody.innerHTML = renderContentWithAssets(textToParagraphs(homeContent.content), homeContent);
             }
 
             const tenderContent = menuContent && menuContent['tenders-policies'];
@@ -1843,15 +1875,15 @@
                 const tendersTitle = document.getElementById('tendersPageTitle');
                 const tendersBody = document.getElementById('tendersPageBody');
                 if (tendersTitle) tendersTitle.textContent = tenderContent.label || 'Tenders & Policies';
-                if (tendersBody) tendersBody.innerHTML = `${escapeHtml(tenderContent.content || '')}${renderMenuAssetsHtml(tenderContent)}`;
+                if (tendersBody) tendersBody.innerHTML = renderContentWithAssets(escapeHtml(tenderContent.content || ''), tenderContent);
             }
 
             const contactContent = menuContent && menuContent['contact-us'];
-            if (contactContent && contactContent.content) {
+            if (contactContent) {
                 const contactTitle = document.querySelector('.contact-page-title');
                 const contactDetails = document.querySelector('.contact-details');
                 if (contactTitle) contactTitle.textContent = contactContent.label || 'Contact Us';
-                if (contactDetails) contactDetails.innerHTML = `${textToParagraphs(contactContent.content)}${renderMenuAssetsHtml(contactContent)}`;
+                if (contactDetails) contactDetails.innerHTML = renderContentWithAssets(textToParagraphs(contactContent.content), contactContent);
             }
         }
 
